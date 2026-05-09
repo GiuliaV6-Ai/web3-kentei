@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web3検定 — 初級・中級・上級・総合</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0eff8;
+    --text2: rgba(240,239,248,0.6);
+    --text3: rgba(240,239,248,0.35);
+    --beginner: #1D9E75;
+    --beginner-bg: rgba(29,158,117,0.12);
+    --beginner-border: rgba(29,158,117,0.3);
+    --inter: #378ADD;
+    --inter-bg: rgba(55,138,221,0.12);
+    --inter-border: rgba(55,138,221,0.3);
+    --adv: #D85A30;
+    --adv-bg: rgba(216,90,48,0.12);
+    --adv-border: rgba(216,90,48,0.3);
+    --all: #7F77DD;
+    --all-bg: rgba(127,119,221,0.12);
+    --all-border: rgba(127,119,221,0.3);
+    --correct: #1D9E75;
+    --correct-bg: rgba(29,158,117,0.1);
+    --wrong: #E24B4A;
+    --wrong-bg: rgba(226,75,74,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(127,119,221,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,119,221,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .header-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--all);
+    margin-bottom: 0.5rem;
+  }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .header-title span {
+    color: var(--all);
+  }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text3);
+    margin-top: 0.5rem;
+  }
+
+  /* Mode grid */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .mode-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 16px;
+  }
+  .mode-card.m-beginner::before { background: var(--beginner-bg); }
+  .mode-card.m-intermediate::before { background: var(--inter-bg); }
+  .mode-card.m-advanced::before { background: var(--adv-bg); }
+  .mode-card.m-all::before { background: var(--all-bg); }
+  .mode-card:hover { transform: translateY(-2px); }
+  .mode-card:hover::before { opacity: 1; }
+  .mode-card.m-beginner:hover { border-color: var(--beginner-border); }
+  .mode-card.m-intermediate:hover { border-color: var(--inter-border); }
+  .mode-card.m-advanced:hover { border-color: var(--adv-border); }
+  .mode-card.m-all:hover { border-color: var(--all-border); }
+
+  .mode-card-inner { position: relative; z-index: 1; }
+  .mode-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .mode-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .mode-desc { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+  .mode-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+  .m-beginner .mode-count { background: var(--beginner-bg); color: var(--beginner); }
+  .m-intermediate .mode-count { background: var(--inter-bg); color: var(--inter); }
+  .m-advanced .mode-count { background: var(--adv-bg); color: var(--adv); }
+  .m-all .mode-count { background: var(--all-bg); color: var(--all); }
+  .m-beginner .mode-icon { color: var(--beginner); }
+  .m-intermediate .mode-icon { color: var(--inter); }
+  .m-advanced .mode-icon { color: var(--adv); }
+  .m-all .mode-icon { color: var(--all); }
+
+  /* Quiz area */
+  .quiz-wrap { display: none; }
+  .quiz-wrap.active { display: block; }
+
+  /* Progress */
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .q-counter { font-size: 12px; color: var(--text3); font-family: 'Syne', sans-serif; }
+  .score-pill {
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .q-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+  }
+  .q-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .q-badge.lv-beginner { background: var(--beginner-bg); color: var(--beginner); }
+  .q-badge.lv-intermediate { background: var(--inter-bg); color: var(--inter); }
+  .q-badge.lv-advanced { background: var(--adv-bg); color: var(--adv); }
+  .q-badge.lv-all { background: var(--all-bg); color: var(--all); }
+  .q-badge.cat-badge { background: rgba(255,255,255,0.06); color: var(--text2); }
+
+  .q-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  /* Options */
+  .opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .opt-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 1.5;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: var(--surface2);
+    border-color: var(--border2);
+  }
+  .opt-btn.correct {
+    background: rgba(29,158,117,0.1);
+    border-color: rgba(29,158,117,0.5);
+    color: #9FE1CB;
+  }
+  .opt-btn.wrong {
+    background: rgba(226,75,74,0.1);
+    border-color: rgba(226,75,74,0.4);
+    color: #F09595;
+  }
+  .opt-btn.reveal { opacity: 0.4; }
+  .opt-index {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--text3);
+  }
+  .opt-btn.correct .opt-index { background: var(--correct); color: #fff; }
+  .opt-btn.wrong .opt-index { background: var(--wrong); color: #fff; }
+
+  /* Feedback */
+  .feedback {
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    border-left: 3px solid transparent;
+    border-radius: 0 10px 10px 0;
+  }
+  .feedback.correct {
+    background: rgba(29,158,117,0.08);
+    border-color: var(--correct);
+    color: #9FE1CB;
+  }
+  .feedback.wrong {
+    background: rgba(226,75,74,0.08);
+    border-color: var(--wrong);
+    color: #F09595;
+  }
+  .feedback strong { display: block; margin-bottom: 4px; font-size: 13px; }
+
+  /* Next button */
+  .next-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.5rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    color: #fff;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .next-btn:active { transform: scale(0.97); }
+
+  /* Result */
+  .result-wrap { display: none; }
+  .result-wrap.active { display: block; }
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .result-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .result-total { font-size: 20px; color: var(--text3); font-family: 'Syne', sans-serif; }
+  .result-pct { font-size: 14px; color: var(--text2); margin-bottom: 0.75rem; }
+  .result-rank {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .result-bk {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .bk-cell {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+  }
+  .bk-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .bk-lbl { font-size: 11px; color: var(--text3); }
+  .result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .retry-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.5rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    color: #fff;
+    transition: opacity 0.15s;
+  }
+  .retry-btn:hover { opacity: 0.85; }
+  .home-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem 1.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    color: var(--text2);
+    transition: background 0.15s;
+  }
+  .home-btn:hover { background: rgba(255,255,255,0.1); }
+
+  /* Responsive */
+  @media (max-width: 420px) {
+    .mode-grid { grid-template-columns: 1fr; }
+    .result-bk { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <p class="header-eyebrow">Blockchain Knowledge Test</p>
+    <h1 class="header-title">Web3<span>検定</span></h1>
+    <p class="header-sub">初級・中級・上級・総合の4モード</p>
+  </header>
+
+  <!-- Home -->
+  <div id="home">
+    <div class="mode-grid">
+      <div class="mode-card m-beginner" onclick="startMode('beginner')">
+        <div class="mode-card-inner">
+          <i class="ti ti-seedling mode-icon" aria-hidden="true"></i>
+          <div class="mode-label">初級</div>
+          <div class="mode-desc">基礎知識を確認</div>
+          <span class="mode-count">10問</span>
+        </div>
+      </div>
+      <div class="mode-card m-intermediate" onclick="startMode('intermediate')">
+        <div class="mode-card-inner">
+          <i class="ti ti-flame mode-icon" aria-hidden="true"></i>
+          <div class="mode-label">中級</div>
+          <div class="mode-desc">実践的な知識</div>
+          <span class="mode-count">10問</span>
+        </div>
+      </div>
+      <div class="mode-card m-advanced" onclick="startMode('advanced')">
+        <div class="mode-card-inner">
+          <i class="ti ti-bolt mode-icon" aria-hidden="true"></i>
+          <div class="mode-label">上級</div>
+          <div class="mode-desc">深い技術理解</div>
+          <span class="mode-count">10問</span>
+        </div>
+      </div>
+      <div class="mode-card m-all" onclick="startMode('all')">
+        <div class="mode-card-inner">
+          <i class="ti ti-trophy mode-icon" aria-hidden="true"></i>
+          <div class="mode-label">総合</div>
+          <div class="mode-desc">全レベルMIX</div>
+          <span class="mode-count">30問</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-wrap" id="quiz">
+    <div class="progress-row">
+      <span class="q-counter" id="q-counter">問題 1 / 10</span>
+      <span class="score-pill" id="score-pill">0点</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-badges" id="q-badges"></div>
+      <div class="q-text" id="q-text"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div id="feedback"></div>
+    <div id="next-area"></div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-wrap" id="result">
+    <div class="result-card">
+      <div id="result-mode-badge" style="margin-bottom:0.75rem"></div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-pct" id="result-pct"></div>
+      <div class="result-rank" id="result-rank"></div>
+      <div class="result-bk" id="result-bk"></div>
+      <div class="result-btns">
+        <button class="retry-btn" id="retry-btn" onclick="retry()">もう一度</button>
+        <button class="home-btn" onclick="goHome()">モード選択へ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODES = {
+  beginner: { label:'初級', color:'#1D9E75', bar:'#1D9E75', cls:'lv-beginner', count:10 },
+  intermediate: { label:'中級', color:'#378ADD', bar:'#378ADD', cls:'lv-intermediate', count:10 },
+  advanced: { label:'上級', color:'#D85A30', bar:'#D85A30', cls:'lv-advanced', count:10 },
+  all: { label:'総合', color:'#7F77DD', bar:'#7F77DD', cls:'lv-all', count:30 }
+};
+
+const Q = {
+  beginner: [
+    {cat:"ブロックチェーン基礎",q:"ブロックチェーンを最もよく表す説明はどれですか？",opts:["大企業が運営する中央集権型データベース","複数のノードで共有・管理される分散型台帳","政府が認可したデジタル通貨","単一サーバーで管理される暗号化データ"],ans:1,exp:"ブロックチェーンは中央管理者を持たず、多くのノードが同一データを保持する分散型台帳技術です。"},
+    {cat:"ブロックチェーン基礎",q:"ビットコインを考案した人物（または組織）の名前は？",opts:["イーロン・マスク","ヴィタリック・ブテリン","サトシ・ナカモト","ニック・サボ"],ans:2,exp:"2008年にサトシ・ナカモトという匿名の人物（または集団）がビットコインの論文を公開しました。正体は今も不明です。"},
+    {cat:"ウォレット",q:"暗号資産の「秘密鍵」が漏洩すると何が起きますか？",opts:["取引手数料が増加する","ウォレットがロックされる","第三者に資産を自由に移動される","パスワードが自動変更される"],ans:2,exp:"秘密鍵は資産への唯一のアクセス権です。漏洩すると第三者が資産を自由に転送できてしまいます。"},
+    {cat:"NFT",q:"NFTの「非代替性（Non-Fungible）」とはどういう意味ですか？",opts:["何度でも複製できる","1つ1つが固有で他と交換不可能","政府が発行した証明書","高速に転送できる"],ans:1,exp:"非代替性とは、そのトークンが唯一無二で同じ価値の他のものと1対1置換できないことを意味します。"},
+    {cat:"ブロックチェーン基礎",q:"「マイニング」とはどのような行為ですか？",opts:["仮想空間でアイテムを採掘する","計算処理でブロックを承認してコインを得る仕組み","ウォレットを作成すること","DeFiで資産を運用すること"],ans:1,exp:"PoWのマイニングは複雑な計算問題を解いてブロックを承認し、報酬としてコインを得る仕組みです。"},
+    {cat:"DeFi",q:"「DEX」とは何の略ですか？",opts:["Digital Exchange","Data Export","Decentralized Exchange","Direct Execution"],ans:2,exp:"DEXはDecentralized Exchange（分散型取引所）の略で、中央管理者なしにスマートコントラクトでトークンを交換できます。"},
+    {cat:"ウォレット",q:"「ハードウェアウォレット」が安全な主な理由はどれですか？",opts:["処理速度が速い","インターネットに常時接続しない（オフライン保管）","製造コストが安い","クラウドに自動バックアップされる"],ans:1,exp:"ハードウェアウォレットは秘密鍵をオフラインで保管するため、オンライン攻撃に対して非常に高い耐性を持ちます。"},
+    {cat:"規制・税金",q:"日本で暗号資産を売却して得た利益の課税区分は？",opts:["非課税","分離課税（20%固定）","雑所得（総合課税）","贈与税"],ans:2,exp:"日本では暗号資産の売却益は原則「雑所得」として総合課税の対象です。最大税率は約55%になることもあります。"},
+    {cat:"ブロックチェーン基礎",q:"パブリックブロックチェーンの特徴として正しいのは？",opts:["参加に許可申請が必要","企業内でのみ使用可能","誰でも自由に参加・閲覧できる","政府機関のみが運営する"],ans:2,exp:"パブリックブロックチェーンはビットコイン・イーサリアムのように誰でも自由に参加・閲覧・取引できるオープンなネットワークです。"},
+    {cat:"NFT",q:"NFTが最初に大きな注目を集めたカテゴリは？",opts:["レイヤー2ソリューション","DeFiレンディング","デジタルアート・コレクティブル","クロスチェーンブリッジ"],ans:2,exp:"CryptoPunksやBored Ape Yacht Clubなどのデジタルアート・コレクティブルでNFTは広く認知されました。"}
+  ],
+  intermediate: [
+    {cat:"コンセンサス",q:"PoS（Proof of Stake）でバリデーターに選ばれやすくなる要因は？",opts:["CPUの処理速度が速い","より多くのトークンをステークしている","ネットワークに最初に参加した","ノードの地理的位置"],ans:1,exp:"PoSではトークンを担保（ステーク）としてロックし、その量に応じてブロック生成の権利を得やすくなります。"},
+    {cat:"DeFi",q:"AMM（自動マーケットメーカー）で最も一般的な価格決定式は？",opts:["x + y = k","x / y = k","x * y = k","x² + y² = k"],ans:2,exp:"Uniswapなど多くのAMMは「x * y = k」という定数積公式を使用します。片方のトークンが減ればもう一方が増え積が一定に保たれます。"},
+    {cat:"DeFi",q:"「インパーマネントロス」が発生する状況はどれですか？",opts:["ガス代が急騰したとき","流動性プールに預けた2トークンの価格比率が変化したとき","スマートコントラクトにバグがあったとき","ウォレットの秘密鍵が漏洩したとき"],ans:1,exp:"流動性プールで預入時と価格比率が変わると、単純保有より資産価値が減少する非永続的損失が発生します。"},
+    {cat:"スケーリング",q:"ビットコインのペイメントチャンネル技術として有名なものは？",opts:["Arbitrum","Polygon PoS","zkSync","Lightning Network"],ans:3,exp:"Lightning Networkはビットコイン上で2者間の取引をオフチェーンで多数実行し、最終結果だけをオンチェーンに記録するL2技術です。"},
+    {cat:"セキュリティ",q:"マルチシグウォレットの主な利点は？",opts:["取引手数料が無料","取引速度が2倍","複数の鍵承認が必要で単一鍵漏洩だけでは資産を奪えない","ハードウェア不要で使える"],ans:2,exp:"マルチシグはn-of-m方式で単一障害点をなくします。例えば3鍵中2つが揃わないと取引できないためセキュリティが大幅に向上します。"},
+    {cat:"DAOガバナンス",q:"「クアドラティック・ボーティング（二次投票）」の目的は？",opts:["投票を高速化する","投票回数を制限する","大口保有者の影響力を抑え幅広い支持を可視化する","匿名投票を実現する"],ans:2,exp:"二次投票は票追加コストが二次関数的に増加するため、大量トークン保有者が支配しにくくなりより民主的な意思決定が実現されます。"},
+    {cat:"イーサリアム",q:"イーサリアムの「ガス（Gas）」とは何ですか？",opts:["マイニング機器の消費電力","トークンの価格変動率","ステーキング報酬の名称","ネットワーク処理コストを測る単位で手数料計算に使われる"],ans:3,exp:"ガスはトランザクション処理やスマートコントラクト実行に必要な計算量を表す単位で、手数料 = Gas × Gas Priceで計算されます。"},
+    {cat:"DeFi",q:"「フラッシュローン」の特徴として正しいのは？",opts:["担保不要で借りて同一トランザクション内で返済する","30日間無利子で借りられる","KYC不要で年利5%のローン","政府が保証するローン"],ans:0,exp:"フラッシュローンは担保不要で借入と返済が1トランザクション内で完結する仕組みです。アービトラージ等に使われますが攻撃にも悪用されます。"},
+    {cat:"NFT",q:"ERC-721とERC-1155の最大の違いは？",opts:["ERC-1155はビットコイン上で動く","ERC-721は画像しか扱えない","ERC-1155はFTとNFTの両方を1コントラクトで管理できる","ERC-1155はガス代が高い"],ans:2,exp:"ERC-721は1コントラクト1種類のNFTのみですが、ERC-1155はFTとNFTを1コントラクトで複数管理できゲームアイテム等に広く使われます。"},
+    {cat:"DAOガバナンス",q:"DAOにおけるガバナンストークンの主な役割は？",opts:["取引手数料の支払いのみ","NFTを自動生成する","保有量に応じた提案・投票権で組織の意思決定に参加する","マイニング報酬の受け取り"],ans:2,exp:"ガバナンストークン保有者はプロトコルのアップグレードや資金配分などの意思決定に投票でき、保有量が多いほど影響力が大きくなります。"}
+  ],
+  advanced: [
+    {cat:"スケーリング",q:"ZKロールアップとオプティミスティックロールアップの最大の技術的差異は？",opts:["ZKは詐欺証明でオプティミスティックは有効性証明を使う","ZKは有効性証明で即時検証しオプティミスティックは挑戦期間内の詐欺証明で覆す仕組み","ZKはPoWでオプティミスティックはPoSを使う","ZKはEVM非対応でオプティミスティックはEVM対応のみ"],ans:1,exp:"ZKロールアップはzkSNARK/STARKで数学的に即時検証します。オプティミスティックは不正がなければ承認とみなし7日程度の挑戦期間を設けます。"},
+    {cat:"ブロックチェーン理論",q:"「ビザンチン将軍問題」とブロックチェーンの関係として正しいのは？",opts:["暗号化鍵の配布問題","ネットワーク遅延の最適化問題","信頼できない参加者が存在する分散ネットワークでも合意形成できるかという問題でPoWで解決された","敵将軍の数を減らす問題"],ans:2,exp:"ビザンチン将軍問題は悪意ある参加者がいても全体合意できるかを問います。PoWはナカモトコンセンサスでこれを確率的に解決しました。"},
+    {cat:"セキュリティ",q:"スマートコントラクトの「リエントランシー攻撃」が成立する主な原因は？",opts:["Solidityのコンパイルバグ","ガス代の上限設定ミス","ERC-20の仕様上の欠陥","外部コントラクト呼び出しでETH送金前に残高を更新しない実装ミス"],ans:3,exp:"The DAOハック(2016)で有名なリエントランシーは、ETH送金前に残高を更新しないため同一トランザクション内で繰り返し引き出しができる脆弱性です。"},
+    {cat:"暗号理論",q:"zkSNARKの「zk」が意味するものは？",opts:["Zero Knowledge（ゼロ知識）— 証明内容を明かさずに真実を証明できる性質","Zero Key — 鍵なしで動く暗号","Zero Kost — コストゼロの証明","Zonal Kernel — 領域分割アルゴリズム"],ans:0,exp:"ゼロ知識証明とは、ある命題が真であることを、その命題の内容（秘密情報）を一切明かさずに証明できる暗号技術です。プライバシー保護に活用されます。"},
+    {cat:"DeFi",q:"「MEV（Maximal Extractable Value）」とは何を指しますか？",opts:["マイニング電力効率の指標","バリデーターがブロック内のトランザクション順序を操作して得られる追加利益","DeFiの年間収益率","マルチシグウォレットの手数料"],ans:1,exp:"MEVはブロック生成者がトランザクションの追加・除外・並び替えを行うことで標準報酬を超えて得られる価値です。フロントランニングやサンドウィッチ攻撃がその例です。"},
+    {cat:"スケーリング",q:"「Danksharding」がイーサリアムのスケーリングに貢献する仕組みは？",opts:["トランザクションをサイドチェーンに移す","PoWに戻してスループットを上げる","データ可用性サンプリングにより全ノードが全データを保存せずにスケールできるようにする","ガス代の上限を撤廃する"],ans:2,exp:"Dankshardingはデータブロブ（blob）を使いロールアップのデータ可用性を安価に提供します。全ノードが全データを持たなくても安全に検証できるデータ可用性サンプリングが核心です。"},
+    {cat:"セキュリティ",q:"「51%攻撃」で実際に可能なことはどれですか？",opts:["スマートコントラクトのコードを書き換える","任意のウォレットから資金を盗む","二重支払い（ダブルスペンド）や過去のブロック履歴を書き換える","全ユーザーのパスワードをリセットする"],ans:2,exp:"51%攻撃でハッシュレートの過半数を掌握した攻撃者は自分のトランザクション履歴を書き換えて二重支払いを行えます。ただしコントラクトや他者ウォレットには直接アクセスできません。"},
+    {cat:"ブロックチェーン理論",q:"「VDF（Verifiable Delay Function）」がブロックチェーンで使われる主な目的は？",opts:["トランザクション速度の向上","スマートコントラクトのデバッグ","計算に一定時間かかることを証明し予測不可能な乱数生成などに活用する","ウォレットの秘密鍵生成"],ans:2,exp:"VDFは特定の計算が最低でも一定時間かかることを証明できる関数で、ランダムネスビーコンやPoSのバリデーター選択で操作耐性を高めるために使われます。"},
+    {cat:"DAOガバナンス",q:"「Vote Delegation（投票委任）」の主な目的は何ですか？",opts:["トークン価格を安定させる","投票参加率の低下問題に対処し専門知識を持つ代表者に投票権を委ねられるようにする","二重投票を防止する","匿名投票を実現する"],ans:1,exp:"多くのDAO保有者は全提案を追えないため、信頼できる専門家に投票権を委任（デリゲート）できる仕組みが投票参加率と意思決定の質を同時に高めます。"},
+    {cat:"暗号理論",q:"「KZGコミットメント」がEIP-4844（Proto-Danksharding）で採用された主な理由は？",opts:["実装が簡単なため","ゼロ知識証明不要でデータの正確性を小さなサイズで証明できるため","PoWより安全なため","ガス代が完全に0になるため"],ans:1,exp:"KZG（Kate-Zaverucha-Goldberg）コミットメントは多項式コミットメント方式で、大きなデータブロブを小さな証明（48バイト）で正確さを保証できるためEIP-4844のデータ可用性に採用されました。"}
+  ]
+};
+
+let currentMode = null, questions = [], cur = 0, score = 0, answered = false;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function levelOf(q) {
+  if (Q.beginner.includes(q)) return 'beginner';
+  if (Q.intermediate.includes(q)) return 'intermediate';
+  return 'advanced';
+}
+
+function startMode(key) {
+  currentMode = key;
+  if (key === 'all') {
+    questions = shuffle([...Q.beginner, ...Q.intermediate, ...Q.advanced]);
+  } else {
+    questions = shuffle(Q[key]);
+  }
+  cur = 0; score = 0; answered = false;
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('result').classList.remove('active');
+  document.getElementById('quiz').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const m = MODES[currentMode];
+  const q = questions[cur];
+  const pct = Math.round((cur / questions.length) * 100);
+
+  document.getElementById('q-counter').textContent = `問題 ${cur + 1} / ${questions.length}`;
+  document.getElementById('score-pill').textContent = `${score}点`;
+  document.getElementById('score-pill').style.cssText = `background:${m.color}22;color:${m.color};padding:2px 10px;border-radius:20px;font-family:'Syne',sans-serif;font-weight:700`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.background = m.bar;
+
+  const lvKey = currentMode === 'all' ? levelOf(q) : currentMode;
+  const lvM = MODES[lvKey];
+  let badgesHtml = `<span class="q-badge ${m.cls}">${m.label}</span>`;
+  if (currentMode === 'all') badgesHtml += `<span class="q-badge lv-${lvKey}">${lvM.label}</span>`;
+  badgesHtml += `<span class="q-badge cat-badge">${q.cat}</span>`;
+  document.getElementById('q-badges').innerHTML = badgesHtml;
+  document.getElementById('q-text').textContent = q.q;
+
+  const opts = q.opts.map((o, i) => `
+    <button class="opt-btn" id="opt${i}" onclick="choose(${i})">
+      <span class="opt-index">${['A','B','C','D'][i]}</span>
+      <span>${o}</span>
+    </button>`).join('');
+  document.getElementById('opts').innerHTML = opts;
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('next-area').innerHTML = '';
+}
+
+function choose(i) {
+  if (answered) return;
+  answered = true;
+  const q = questions[cur];
+  const correct = q.ans;
+  const isC = i === correct;
+  if (isC) score++;
+  const m = MODES[currentMode];
+
+  q.opts.forEach((_, j) => {
+    const b = document.getElementById('opt' + j);
+    b.disabled = true;
+    if (j === correct) b.className = 'opt-btn correct';
+    else if (j === i && !isC) b.className = 'opt-btn wrong';
+    else b.className = 'opt-btn reveal';
+  });
+
+  document.getElementById('feedback').innerHTML =
+    `<div class="feedback ${isC ? 'correct' : 'wrong'}">
+      <strong>${isC ? '✓ 正解！' : '✗ 不正解'}</strong>${q.exp}
+    </div>`;
+
+  const lbl = cur < questions.length - 1 ? '次の問題 →' : '結果を見る →';
+  document.getElementById('next-area').innerHTML =
+    `<button class="next-btn" style="background:${m.color}" onclick="nextQ()">${lbl}</button>`;
+}
+
+function nextQ() {
+  cur++;
+  answered = false;
+  if (cur >= questions.length) showResult();
+  else renderQuestion();
+}
+
+function showResult() {
+  const m = MODES[currentMode];
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  let rank;
+  if (pct >= 90) rank = 'Web3マスター';
+  else if (pct >= 70) rank = 'Web3エキスパート';
+  else if (pct >= 50) rank = 'Web3学習中';
+  else rank = 'Web3入門者';
+
+  document.getElementById('quiz').classList.remove('active');
+  document.getElementById('result').classList.add('active');
+
+  document.getElementById('result-mode-badge').innerHTML =
+    `<span class="q-badge ${m.cls}">${m.label}</span>`;
+  document.getElementById('result-score').innerHTML =
+    `<span style="color:${m.color}">${score}</span><span class="result-total"> / ${total}</span>`;
+  document.getElementById('result-pct').textContent = `正答率 ${pct}%`;
+  document.getElementById('result-rank').textContent = rank;
+  document.getElementById('result-bk').innerHTML = `
+    <div class="bk-cell"><div class="bkn" style="color:#1D9E75">${score}</div><div class="bk-lbl">正解</div></div>
+    <div class="bk-cell"><div class="bkn" style="color:#E24B4A">${total - score}</div><div class="bk-lbl">不正解</div></div>
+    <div class="bk-cell"><div class="bkn" style="color:${m.color}">${pct}%</div><div class="bk-lbl">正答率</div></div>`;
+  document.getElementById('retry-btn').style.background = m.color;
+}
+
+function retry() {
+  startMode(currentMode);
+}
+
+function goHome() {
+  document.getElementById('result').classList.remove('active');
+  document.getElementById('quiz').classList.remove('active');
+  document.getElementById('home').style.display = '';
+}
+</script>
+</body>
+</html>
