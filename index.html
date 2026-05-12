@@ -3,648 +3,479 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web3検定 — 初級・中級・上級・総合</title>
+<title>BushiDAO WEB3検定</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #f0eff8;
-    --text2: rgba(240,239,248,0.6);
-    --text3: rgba(240,239,248,0.35);
-    --beginner: #1D9E75;
-    --beginner-bg: rgba(29,158,117,0.12);
-    --beginner-border: rgba(29,158,117,0.3);
-    --inter: #378ADD;
-    --inter-bg: rgba(55,138,221,0.12);
-    --inter-border: rgba(55,138,221,0.3);
-    --adv: #D85A30;
-    --adv-bg: rgba(216,90,48,0.12);
-    --adv-border: rgba(216,90,48,0.3);
-    --all: #7F77DD;
-    --all-bg: rgba(127,119,221,0.12);
-    --all-border: rgba(127,119,221,0.3);
-    --correct: #1D9E75;
-    --correct-bg: rgba(29,158,117,0.1);
-    --wrong: #E24B4A;
-    --wrong-bg: rgba(226,75,74,0.1);
-  }
+:root {
+  --ink: #1a1410;
+  --paper: #f5f0e8;
+  --paper2: #ede8dd;
+  --gold: #b8860b;
+  --red: #8b1a1a;
+  --red-light: #c0392b;
+  --teal: #1a5f5f;
+  --muted: #6b6050;
+  --border: rgba(26,20,16,0.15);
+  --master: #4a1a6e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Serif JP',serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(26,20,16,0.04) 39px,rgba(26,20,16,0.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(26,20,16,0.02) 39px,rgba(26,20,16,0.02) 40px);pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 0 16px;border-bottom:2px solid var(--ink);}
+.logo{font-size:13px;font-family:'Space Mono',monospace;letter-spacing:0.08em;color:var(--muted);}
+.logo strong{color:var(--red);font-size:15px;font-family:'Noto Serif JP',serif;font-weight:900;}
+.stamp{width:44px;height:44px;border:2.5px solid var(--red);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1;transform:rotate(-4deg);}
+.stamp span{font-size:7px;color:var(--red);letter-spacing:0.04em;font-weight:700;}
+.stamp strong{font-size:14px;color:var(--red);font-weight:900;}
+.screen{display:none;flex:1;flex-direction:column;}
+.screen.active{display:flex;}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* START */
+.start-hero{text-align:center;padding:40px 0 28px;}
+.start-title{font-size:clamp(26px,7vw,44px);font-weight:900;line-height:1.1;margin-bottom:8px;}
+.start-title em{font-style:normal;color:var(--red);display:block;font-size:0.55em;letter-spacing:0.15em;font-family:'Space Mono',monospace;margin-bottom:4px;}
+.start-sub{font-size:13px;color:var(--muted);letter-spacing:0.05em;margin-top:8px;}
+.level-grid{display:grid;gap:10px;margin:24px 0 12px;}
+.level-card{border:1.5px solid var(--border);background:white;border-radius:4px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color 0.2s,transform 0.15s;position:relative;overflow:hidden;}
+.level-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c);transition:width 0.2s;}
+.level-card:hover{border-color:var(--c);transform:translateX(3px);}
+.level-card:hover::before{width:6px;}
+.lc-rank{font-size:26px;font-weight:900;color:var(--c);min-width:40px;text-align:center;line-height:1;}
+.lc-info{flex:1;}
+.lc-name{font-size:16px;font-weight:700;margin-bottom:3px;}
+.lc-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.lc-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--c);background:color-mix(in srgb,var(--c) 8%,transparent);padding:3px 8px;border-radius:2px;white-space:nowrap;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* master card — special styling */
+.level-card.master-card{border-color:rgba(74,26,110,0.25);background:linear-gradient(135deg,#fdf8ff 0%,#f8f0ff 100%);}
+.level-card.master-card::after{content:'番外編';position:absolute;top:10px;right:12px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#7c3aad;background:rgba(124,58,173,0.1);padding:2px 7px;border-radius:2px;}
+.level-card.web3-master-card{border-color:rgba(10,74,122,0.25);background:linear-gradient(135deg,#f0f7ff 0%,#e8f4ff 100%);}
+.level-card.web3-master-card::after{content:'番外編';position:absolute;top:10px;right:12px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#0a4a7a;background:rgba(10,74,122,0.1);padding:2px 7px;border-radius:2px;}
 
-  /* Background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(127,119,221,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(127,119,221,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* QUIZ */
+.quiz-header{padding:20px 0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;}
+.qh-level{font-size:11px;font-family:'Space Mono',monospace;color:var(--cl);letter-spacing:0.08em;border:1px solid var(--cl);padding:3px 10px;border-radius:2px;}
+.qh-prog-wrap{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.qh-prog{height:100%;background:var(--cl);border-radius:2px;transition:width 0.4s ease;}
+.qh-num{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+.q-body{padding:28px 0 20px;flex:1;}
+.q-badge{display:inline-block;font-size:10px;letter-spacing:0.1em;font-family:'Space Mono',monospace;padding:3px 10px;border-radius:2px;margin-bottom:16px;}
+.q-badge.bushido{background:#eef5ee;color:var(--teal);border:1px solid rgba(26,95,95,0.2);}
+.q-badge.web3{background:#fef5e0;color:var(--gold);border:1px solid rgba(184,134,11,0.2);}
+.q-badge.master{background:#f5eeff;color:var(--master);border:1px solid rgba(74,26,110,0.25);}
+.q-text{font-size:clamp(15px,3.5vw,19px);font-weight:700;line-height:1.65;margin-bottom:28px;}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice-btn{width:100%;text-align:left;background:white;border:1.5px solid var(--border);border-radius:4px;padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;font-family:'Noto Serif JP',serif;font-size:14px;line-height:1.6;color:var(--ink);transition:border-color 0.15s,background 0.15s,transform 0.1s;}
+.choice-btn:hover:not(:disabled){border-color:var(--cl);background:color-mix(in srgb,var(--cl) 4%,white);transform:translateX(3px);}
+.choice-btn:disabled{cursor:default;}
+.choice-key{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--muted);transition:all 0.15s;}
+.choice-btn.correct{border-color:var(--teal);background:#eef5ee;}
+.choice-btn.correct .choice-key{background:var(--teal);border-color:var(--teal);color:white;}
+.choice-btn.wrong{border-color:var(--red-light);background:#fef0f0;}
+.choice-btn.wrong .choice-key{background:var(--red-light);border-color:var(--red-light);color:white;}
+.choice-btn.reveal{border-color:var(--teal);background:#eef5ee;opacity:0.85;}
+.choice-btn.reveal .choice-key{background:var(--teal);border-color:var(--teal);color:white;}
+.explanation{margin-top:20px;padding:16px 18px;background:var(--paper2);border-left:3px solid var(--cl);border-radius:0 4px 4px 0;font-size:13px;line-height:1.8;animation:fadeIn 0.3s ease;}
+.explanation strong{color:var(--cl);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;}}
+.quiz-footer{padding:16px 0 32px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);}
+.score-display{font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);}
+.score-display strong{color:var(--ink);}
+.back-btn{font-family:'Noto Serif JP',serif;font-size:13px;padding:10px 24px;border-radius:3px;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--muted);transition:all 0.15s;}
+.back-btn:hover{border-color:var(--ink);color:var(--ink);}
+.next-btn{font-family:'Noto Serif JP',serif;font-size:13px;padding:10px 24px;border-radius:3px;cursor:pointer;background:var(--ink);border:none;color:var(--paper);display:none;transition:opacity 0.15s;}
+.next-btn.show{display:block;}
+.next-btn:hover{opacity:0.8;}
 
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-  .header-eyebrow {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--all);
-    margin-bottom: 0.5rem;
-  }
-  .header-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 6vw, 40px);
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-  }
-  .header-title span {
-    color: var(--all);
-  }
-  .header-sub {
-    font-size: 13px;
-    color: var(--text3);
-    margin-top: 0.5rem;
-  }
-
-  /* Mode grid */
-  .mode-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 2rem;
-  }
-
-  .mode-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.25rem;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s, transform 0.15s;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-  }
-  .mode-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: 16px;
-  }
-  .mode-card.m-beginner::before { background: var(--beginner-bg); }
-  .mode-card.m-intermediate::before { background: var(--inter-bg); }
-  .mode-card.m-advanced::before { background: var(--adv-bg); }
-  .mode-card.m-all::before { background: var(--all-bg); }
-  .mode-card:hover { transform: translateY(-2px); }
-  .mode-card:hover::before { opacity: 1; }
-  .mode-card.m-beginner:hover { border-color: var(--beginner-border); }
-  .mode-card.m-intermediate:hover { border-color: var(--inter-border); }
-  .mode-card.m-advanced:hover { border-color: var(--adv-border); }
-  .mode-card.m-all:hover { border-color: var(--all-border); }
-
-  .mode-card-inner { position: relative; z-index: 1; }
-  .mode-icon { font-size: 24px; margin-bottom: 8px; display: block; }
-  .mode-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .mode-desc { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-  .mode-count {
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 20px;
-    display: inline-block;
-  }
-  .m-beginner .mode-count { background: var(--beginner-bg); color: var(--beginner); }
-  .m-intermediate .mode-count { background: var(--inter-bg); color: var(--inter); }
-  .m-advanced .mode-count { background: var(--adv-bg); color: var(--adv); }
-  .m-all .mode-count { background: var(--all-bg); color: var(--all); }
-  .m-beginner .mode-icon { color: var(--beginner); }
-  .m-intermediate .mode-icon { color: var(--inter); }
-  .m-advanced .mode-icon { color: var(--adv); }
-  .m-all .mode-icon { color: var(--all); }
-
-  /* Quiz area */
-  .quiz-wrap { display: none; }
-  .quiz-wrap.active { display: block; }
-
-  /* Progress */
-  .progress-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .q-counter { font-size: 12px; color: var(--text3); font-family: 'Syne', sans-serif; }
-  .score-pill {
-    font-size: 12px;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    padding: 2px 10px;
-    border-radius: 20px;
-  }
-  .progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 2px;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  /* Question card */
-  .q-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .q-badges {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 0.85rem;
-  }
-  .q-badge {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 500;
-  }
-  .q-badge.lv-beginner { background: var(--beginner-bg); color: var(--beginner); }
-  .q-badge.lv-intermediate { background: var(--inter-bg); color: var(--inter); }
-  .q-badge.lv-advanced { background: var(--adv-bg); color: var(--adv); }
-  .q-badge.lv-all { background: var(--all-bg); color: var(--all); }
-  .q-badge.cat-badge { background: rgba(255,255,255,0.06); color: var(--text2); }
-
-  .q-text {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.65;
-  }
-
-  /* Options */
-  .opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
-  .opt-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.7rem 1rem;
-    text-align: left;
-    font-size: 14px;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    transition: border-color 0.15s, background 0.15s;
-    font-family: 'Noto Sans JP', sans-serif;
-    line-height: 1.5;
-  }
-  .opt-btn:hover:not(:disabled) {
-    background: var(--surface2);
-    border-color: var(--border2);
-  }
-  .opt-btn.correct {
-    background: rgba(29,158,117,0.1);
-    border-color: rgba(29,158,117,0.5);
-    color: #9FE1CB;
-  }
-  .opt-btn.wrong {
-    background: rgba(226,75,74,0.1);
-    border-color: rgba(226,75,74,0.4);
-    color: #F09595;
-  }
-  .opt-btn.reveal { opacity: 0.4; }
-  .opt-index {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    flex-shrink: 0;
-    margin-top: 1px;
-    color: var(--text3);
-  }
-  .opt-btn.correct .opt-index { background: var(--correct); color: #fff; }
-  .opt-btn.wrong .opt-index { background: var(--wrong); color: #fff; }
-
-  /* Feedback */
-  .feedback {
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    font-size: 13px;
-    line-height: 1.7;
-    margin-bottom: 1rem;
-    border-left: 3px solid transparent;
-    border-radius: 0 10px 10px 0;
-  }
-  .feedback.correct {
-    background: rgba(29,158,117,0.08);
-    border-color: var(--correct);
-    color: #9FE1CB;
-  }
-  .feedback.wrong {
-    background: rgba(226,75,74,0.08);
-    border-color: var(--wrong);
-    color: #F09595;
-  }
-  .feedback strong { display: block; margin-bottom: 4px; font-size: 13px; }
-
-  /* Next button */
-  .next-btn {
-    border: none;
-    border-radius: 10px;
-    padding: 0.65rem 1.5rem;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    cursor: pointer;
-    color: #fff;
-    letter-spacing: 0.02em;
-    transition: opacity 0.15s, transform 0.1s;
-  }
-  .next-btn:hover { opacity: 0.88; }
-  .next-btn:active { transform: scale(0.97); }
-
-  /* Result */
-  .result-wrap { display: none; }
-  .result-wrap.active { display: block; }
-  .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-  }
-  .result-score {
-    font-family: 'Syne', sans-serif;
-    font-size: 56px;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .result-total { font-size: 20px; color: var(--text3); font-family: 'Syne', sans-serif; }
-  .result-pct { font-size: 14px; color: var(--text2); margin-bottom: 0.75rem; }
-  .result-rank {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-  }
-  .result-bk {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-  .bk-cell {
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-    padding: 0.75rem 0.5rem;
-  }
-  .bk-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 3px;
-  }
-  .bk-lbl { font-size: 11px; color: var(--text3); }
-  .result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .retry-btn {
-    border: none;
-    border-radius: 10px;
-    padding: 0.65rem 1.5rem;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    cursor: pointer;
-    color: #fff;
-    transition: opacity 0.15s;
-  }
-  .retry-btn:hover { opacity: 0.85; }
-  .home-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.65rem 1.5rem;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Syne', sans-serif;
-    cursor: pointer;
-    color: var(--text2);
-    transition: background 0.15s;
-  }
-  .home-btn:hover { background: rgba(255,255,255,0.1); }
-
-  /* Responsive */
-  @media (max-width: 420px) {
-    .mode-grid { grid-template-columns: 1fr; }
-    .result-bk { grid-template-columns: repeat(3,1fr); }
-  }
+/* RESULT */
+.result-body{padding:40px 0;flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.result-circle{width:140px;height:140px;border:3px solid var(--cl);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:28px;position:relative;}
+.result-circle::before{content:'';position:absolute;inset:6px;border-radius:50%;border:1px solid var(--border);}
+.result-score-num{font-size:42px;font-weight:900;line-height:1;color:var(--cl);font-family:'Space Mono',monospace;}
+.result-score-denom{font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.result-rank{font-size:clamp(22px,5vw,32px);font-weight:900;margin-bottom:8px;letter-spacing:0.05em;}
+.result-rank-label{font-size:11px;font-family:'Space Mono',monospace;color:var(--cl);letter-spacing:0.15em;margin-bottom:16px;}
+.result-msg{font-size:14px;color:var(--muted);line-height:1.8;max-width:360px;margin-bottom:36px;}
+.score-breakdown{width:100%;background:white;border:1.5px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:24px;text-align:left;}
+.sb-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.sb-row:last-child{margin-bottom:0;}
+.sb-label{font-size:12px;color:var(--muted);min-width:52px;}
+.sb-bar-wrap{flex:1;height:6px;background:var(--paper2);border-radius:3px;overflow:hidden;}
+.sb-bar{height:100%;border-radius:3px;transition:width 0.8s ease 0.3s;}
+.sb-bar.bushido{background:var(--teal);}
+.sb-bar.web3{background:var(--gold);}
+.sb-bar.master-bar{background:var(--master);}
+.sb-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);min-width:32px;text-align:right;}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn-primary{font-family:'Noto Serif JP',serif;background:var(--ink);color:var(--paper);border:none;padding:12px 28px;border-radius:3px;font-size:14px;cursor:pointer;transition:opacity 0.15s;}
+.btn-primary:hover{opacity:0.8;}
+.btn-outline{font-family:'Noto Serif JP',serif;background:transparent;color:var(--ink);border:1.5px solid var(--border);padding:12px 28px;border-radius:3px;font-size:14px;cursor:pointer;transition:border-color 0.15s;}
+.btn-outline:hover{border-color:var(--ink);}
+@media(max-width:480px){.level-card{padding:14px 16px;}.lc-rank{font-size:22px;min-width:34px;}.choice-btn{padding:12px 14px;font-size:13px;}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="header">
-    <p class="header-eyebrow">Blockchain Knowledge Test</p>
-    <h1 class="header-title">Web3<span>検定</span></h1>
-    <p class="header-sub">初級・中級・上級・総合の4モード</p>
+
+  <header class="topbar">
+    <div class="logo"><strong>武士道</strong> × WEB3<br><span style="font-size:10px;letter-spacing:0.1em">BUSHIDAO CERTIFICATION</span></div>
+    <div class="stamp"><span>武士</span><strong>道</strong><span>DAO</span></div>
   </header>
 
-  <!-- Home -->
-  <div id="home">
-    <div class="mode-grid">
-      <div class="mode-card m-beginner" onclick="startMode('beginner')">
-        <div class="mode-card-inner">
-          <i class="ti ti-seedling mode-icon" aria-hidden="true"></i>
-          <div class="mode-label">初級</div>
-          <div class="mode-desc">基礎知識を確認</div>
-          <span class="mode-count">10問</span>
+  <!-- START -->
+  <section class="screen active" id="screen-start">
+    <div class="start-hero">
+      <div class="start-title"><em>WEB3 KENTEI</em>検定試験</div>
+      <div class="start-sub">武士道の精神とWeb3技術を問う、BushiDAO公認の試練</div>
+    </div>
+    <div class="level-grid">
+      <div class="level-card" style="--c:var(--teal)" onclick="startQuiz(0)">
+        <div class="lc-rank">入</div>
+        <div class="lc-info">
+          <div class="lc-name">入門編 — 心得の巻</div>
+          <div class="lc-desc">武士道の基礎とWeb3の基本概念。初めての挑戦に最適。</div>
         </div>
+        <div class="lc-count">5問</div>
       </div>
-      <div class="mode-card m-intermediate" onclick="startMode('intermediate')">
-        <div class="mode-card-inner">
-          <i class="ti ti-flame mode-icon" aria-hidden="true"></i>
-          <div class="mode-label">中級</div>
-          <div class="mode-desc">実践的な知識</div>
-          <span class="mode-count">10問</span>
+      <div class="level-card" style="--c:var(--gold)" onclick="startQuiz(1)">
+        <div class="lc-rank">中</div>
+        <div class="lc-info">
+          <div class="lc-name">中級編 — 修行の巻</div>
+          <div class="lc-desc">DAO・NFT・武士の歴史と精神。本格的な知識が問われる。</div>
         </div>
+        <div class="lc-count">7問</div>
       </div>
-      <div class="mode-card m-advanced" onclick="startMode('advanced')">
-        <div class="mode-card-inner">
-          <i class="ti ti-bolt mode-icon" aria-hidden="true"></i>
-          <div class="mode-label">上級</div>
-          <div class="mode-desc">深い技術理解</div>
-          <span class="mode-count">10問</span>
+      <div class="level-card" style="--c:var(--red)" onclick="startQuiz(2)">
+        <div class="lc-rank">奥</div>
+        <div class="lc-info">
+          <div class="lc-name">奥義編 — 極意の巻</div>
+          <div class="lc-desc">DeFi・ZKP・武士道哲学の深淵。達人のみ到達できる境地。</div>
         </div>
+        <div class="lc-count">7問</div>
       </div>
-      <div class="mode-card m-all" onclick="startMode('all')">
-        <div class="mode-card-inner">
-          <i class="ti ti-trophy mode-icon" aria-hidden="true"></i>
-          <div class="mode-label">総合</div>
-          <div class="mode-desc">全レベルMIX</div>
-          <span class="mode-count">30問</span>
+      <div class="level-card master-card" style="--c:var(--master)" onclick="startQuiz(3)">
+        <div class="lc-rank" style="font-size:20px">皆伝</div>
+        <div class="lc-info">
+          <div class="lc-name">武士道マスター編 — 秘伝の巻</div>
+          <div class="lc-desc">日本古来の武士道のみを問う。歴史・思想・言葉の真の理解者か試される。</div>
         </div>
+        <div class="lc-count">10問</div>
+      </div>
+      <div class="level-card web3-master-card" style="--c:#0a4a7a" onclick="startQuiz(4)">
+        <div class="lc-rank" style="font-size:20px;color:#0a4a7a">覇道</div>
+        <div class="lc-info">
+          <div class="lc-name">Web3マスター編 — 鉄壁の巻</div>
+          <div class="lc-desc">ブロックチェーン・DeFi・DAOの深部を問う。Web3の真の使い手だけが突破できる。</div>
+        </div>
+        <div class="lc-count">10問</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Quiz -->
-  <div class="quiz-wrap" id="quiz">
-    <div class="progress-row">
-      <span class="q-counter" id="q-counter">問題 1 / 10</span>
-      <span class="score-pill" id="score-pill">0点</span>
+  <!-- QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div class="qh-level" id="qh-level">入門編</div>
+      <div class="qh-prog-wrap"><div class="qh-prog" id="qh-prog" style="width:0%"></div></div>
+      <div class="qh-num" id="qh-num">1 / 5</div>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    <div class="q-body">
+      <span class="q-badge" id="q-badge">武士道</span>
+      <p class="q-text" id="q-text"></p>
+      <div class="choices" id="choices"></div>
+      <div class="explanation" id="explanation" style="display:none"></div>
     </div>
-    <div class="q-card">
-      <div class="q-badges" id="q-badges"></div>
-      <div class="q-text" id="q-text"></div>
+    <div class="quiz-footer">
+      <button class="back-btn" onclick="goStart()">← 戻る</button>
+      <div class="score-display">正解 <strong id="score-live">0</strong> / <span id="total-live">0</span></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">次の問題 →</button>
     </div>
-    <div class="opts" id="opts"></div>
-    <div id="feedback"></div>
-    <div id="next-area"></div>
-  </div>
+  </section>
 
-  <!-- Result -->
-  <div class="result-wrap" id="result">
-    <div class="result-card">
-      <div id="result-mode-badge" style="margin-bottom:0.75rem"></div>
-      <div class="result-score" id="result-score"></div>
-      <div class="result-pct" id="result-pct"></div>
-      <div class="result-rank" id="result-rank"></div>
-      <div class="result-bk" id="result-bk"></div>
-      <div class="result-btns">
-        <button class="retry-btn" id="retry-btn" onclick="retry()">もう一度</button>
-        <button class="home-btn" onclick="goHome()">モード選択へ</button>
+  <!-- RESULT -->
+  <section class="screen" id="screen-result">
+    <div class="result-body">
+      <div class="result-circle">
+        <div class="result-score-num" id="res-num">0</div>
+        <div class="result-score-denom" id="res-denom">/ 0問</div>
+      </div>
+      <div class="result-rank-label" id="res-rlabel">RANK</div>
+      <div class="result-rank" id="res-rank">皆伝</div>
+      <div class="result-msg" id="res-msg"></div>
+      <div class="score-breakdown" id="score-bd"></div>
+      <div class="result-actions">
+        <button class="btn-outline" onclick="retryQuiz()">もう一度挑戦</button>
+        <button class="btn-primary" onclick="goStart()">他の段位へ</button>
       </div>
     </div>
-  </div>
+  </section>
+
 </div>
-
 <script>
-const MODES = {
-  beginner: { label:'初級', color:'#1D9E75', bar:'#1D9E75', cls:'lv-beginner', count:10 },
-  intermediate: { label:'中級', color:'#378ADD', bar:'#378ADD', cls:'lv-intermediate', count:10 },
-  advanced: { label:'上級', color:'#D85A30', bar:'#D85A30', cls:'lv-advanced', count:10 },
-  all: { label:'総合', color:'#7F77DD', bar:'#7F77DD', cls:'lv-all', count:30 }
-};
+const LEVELS = [
 
-const Q = {
-  beginner: [
-    {cat:"ブロックチェーン基礎",q:"ブロックチェーンを最もよく表す説明はどれですか？",opts:["大企業が運営する中央集権型データベース","複数のノードで共有・管理される分散型台帳","政府が認可したデジタル通貨","単一サーバーで管理される暗号化データ"],ans:1,exp:"ブロックチェーンは中央管理者を持たず、多くのノードが同一データを保持する分散型台帳技術です。"},
-    {cat:"ブロックチェーン基礎",q:"ビットコインを考案した人物（または組織）の名前は？",opts:["イーロン・マスク","ヴィタリック・ブテリン","サトシ・ナカモト","ニック・サボ"],ans:2,exp:"2008年にサトシ・ナカモトという匿名の人物（または集団）がビットコインの論文を公開しました。正体は今も不明です。"},
-    {cat:"ウォレット",q:"暗号資産の「秘密鍵」が漏洩すると何が起きますか？",opts:["取引手数料が増加する","ウォレットがロックされる","第三者に資産を自由に移動される","パスワードが自動変更される"],ans:2,exp:"秘密鍵は資産への唯一のアクセス権です。漏洩すると第三者が資産を自由に転送できてしまいます。"},
-    {cat:"NFT",q:"NFTの「非代替性（Non-Fungible）」とはどういう意味ですか？",opts:["何度でも複製できる","1つ1つが固有で他と交換不可能","政府が発行した証明書","高速に転送できる"],ans:1,exp:"非代替性とは、そのトークンが唯一無二で同じ価値の他のものと1対1置換できないことを意味します。"},
-    {cat:"ブロックチェーン基礎",q:"「マイニング」とはどのような行為ですか？",opts:["仮想空間でアイテムを採掘する","計算処理でブロックを承認してコインを得る仕組み","ウォレットを作成すること","DeFiで資産を運用すること"],ans:1,exp:"PoWのマイニングは複雑な計算問題を解いてブロックを承認し、報酬としてコインを得る仕組みです。"},
-    {cat:"DeFi",q:"「DEX」とは何の略ですか？",opts:["Digital Exchange","Data Export","Decentralized Exchange","Direct Execution"],ans:2,exp:"DEXはDecentralized Exchange（分散型取引所）の略で、中央管理者なしにスマートコントラクトでトークンを交換できます。"},
-    {cat:"ウォレット",q:"「ハードウェアウォレット」が安全な主な理由はどれですか？",opts:["処理速度が速い","インターネットに常時接続しない（オフライン保管）","製造コストが安い","クラウドに自動バックアップされる"],ans:1,exp:"ハードウェアウォレットは秘密鍵をオフラインで保管するため、オンライン攻撃に対して非常に高い耐性を持ちます。"},
-    {cat:"規制・税金",q:"日本で暗号資産を売却して得た利益の課税区分は？",opts:["非課税","分離課税（20%固定）","雑所得（総合課税）","贈与税"],ans:2,exp:"日本では暗号資産の売却益は原則「雑所得」として総合課税の対象です。最大税率は約55%になることもあります。"},
-    {cat:"ブロックチェーン基礎",q:"パブリックブロックチェーンの特徴として正しいのは？",opts:["参加に許可申請が必要","企業内でのみ使用可能","誰でも自由に参加・閲覧できる","政府機関のみが運営する"],ans:2,exp:"パブリックブロックチェーンはビットコイン・イーサリアムのように誰でも自由に参加・閲覧・取引できるオープンなネットワークです。"},
-    {cat:"NFT",q:"NFTが最初に大きな注目を集めたカテゴリは？",opts:["レイヤー2ソリューション","DeFiレンディング","デジタルアート・コレクティブル","クロスチェーンブリッジ"],ans:2,exp:"CryptoPunksやBored Ape Yacht Clubなどのデジタルアート・コレクティブルでNFTは広く認知されました。"}
-  ],
-  intermediate: [
-    {cat:"コンセンサス",q:"PoS（Proof of Stake）でバリデーターに選ばれやすくなる要因は？",opts:["CPUの処理速度が速い","より多くのトークンをステークしている","ネットワークに最初に参加した","ノードの地理的位置"],ans:1,exp:"PoSではトークンを担保（ステーク）としてロックし、その量に応じてブロック生成の権利を得やすくなります。"},
-    {cat:"DeFi",q:"AMM（自動マーケットメーカー）で最も一般的な価格決定式は？",opts:["x + y = k","x / y = k","x * y = k","x² + y² = k"],ans:2,exp:"Uniswapなど多くのAMMは「x * y = k」という定数積公式を使用します。片方のトークンが減ればもう一方が増え積が一定に保たれます。"},
-    {cat:"DeFi",q:"「インパーマネントロス」が発生する状況はどれですか？",opts:["ガス代が急騰したとき","流動性プールに預けた2トークンの価格比率が変化したとき","スマートコントラクトにバグがあったとき","ウォレットの秘密鍵が漏洩したとき"],ans:1,exp:"流動性プールで預入時と価格比率が変わると、単純保有より資産価値が減少する非永続的損失が発生します。"},
-    {cat:"スケーリング",q:"ビットコインのペイメントチャンネル技術として有名なものは？",opts:["Arbitrum","Polygon PoS","zkSync","Lightning Network"],ans:3,exp:"Lightning Networkはビットコイン上で2者間の取引をオフチェーンで多数実行し、最終結果だけをオンチェーンに記録するL2技術です。"},
-    {cat:"セキュリティ",q:"マルチシグウォレットの主な利点は？",opts:["取引手数料が無料","取引速度が2倍","複数の鍵承認が必要で単一鍵漏洩だけでは資産を奪えない","ハードウェア不要で使える"],ans:2,exp:"マルチシグはn-of-m方式で単一障害点をなくします。例えば3鍵中2つが揃わないと取引できないためセキュリティが大幅に向上します。"},
-    {cat:"DAOガバナンス",q:"「クアドラティック・ボーティング（二次投票）」の目的は？",opts:["投票を高速化する","投票回数を制限する","大口保有者の影響力を抑え幅広い支持を可視化する","匿名投票を実現する"],ans:2,exp:"二次投票は票追加コストが二次関数的に増加するため、大量トークン保有者が支配しにくくなりより民主的な意思決定が実現されます。"},
-    {cat:"イーサリアム",q:"イーサリアムの「ガス（Gas）」とは何ですか？",opts:["マイニング機器の消費電力","トークンの価格変動率","ステーキング報酬の名称","ネットワーク処理コストを測る単位で手数料計算に使われる"],ans:3,exp:"ガスはトランザクション処理やスマートコントラクト実行に必要な計算量を表す単位で、手数料 = Gas × Gas Priceで計算されます。"},
-    {cat:"DeFi",q:"「フラッシュローン」の特徴として正しいのは？",opts:["担保不要で借りて同一トランザクション内で返済する","30日間無利子で借りられる","KYC不要で年利5%のローン","政府が保証するローン"],ans:0,exp:"フラッシュローンは担保不要で借入と返済が1トランザクション内で完結する仕組みです。アービトラージ等に使われますが攻撃にも悪用されます。"},
-    {cat:"NFT",q:"ERC-721とERC-1155の最大の違いは？",opts:["ERC-1155はビットコイン上で動く","ERC-721は画像しか扱えない","ERC-1155はFTとNFTの両方を1コントラクトで管理できる","ERC-1155はガス代が高い"],ans:2,exp:"ERC-721は1コントラクト1種類のNFTのみですが、ERC-1155はFTとNFTを1コントラクトで複数管理できゲームアイテム等に広く使われます。"},
-    {cat:"DAOガバナンス",q:"DAOにおけるガバナンストークンの主な役割は？",opts:["取引手数料の支払いのみ","NFTを自動生成する","保有量に応じた提案・投票権で組織の意思決定に参加する","マイニング報酬の受け取り"],ans:2,exp:"ガバナンストークン保有者はプロトコルのアップグレードや資金配分などの意思決定に投票でき、保有量が多いほど影響力が大きくなります。"}
-  ],
-  advanced: [
-    {cat:"スケーリング",q:"ZKロールアップとオプティミスティックロールアップの最大の技術的差異は？",opts:["ZKは詐欺証明でオプティミスティックは有効性証明を使う","ZKは有効性証明で即時検証しオプティミスティックは挑戦期間内の詐欺証明で覆す仕組み","ZKはPoWでオプティミスティックはPoSを使う","ZKはEVM非対応でオプティミスティックはEVM対応のみ"],ans:1,exp:"ZKロールアップはzkSNARK/STARKで数学的に即時検証します。オプティミスティックは不正がなければ承認とみなし7日程度の挑戦期間を設けます。"},
-    {cat:"ブロックチェーン理論",q:"「ビザンチン将軍問題」とブロックチェーンの関係として正しいのは？",opts:["暗号化鍵の配布問題","ネットワーク遅延の最適化問題","信頼できない参加者が存在する分散ネットワークでも合意形成できるかという問題でPoWで解決された","敵将軍の数を減らす問題"],ans:2,exp:"ビザンチン将軍問題は悪意ある参加者がいても全体合意できるかを問います。PoWはナカモトコンセンサスでこれを確率的に解決しました。"},
-    {cat:"セキュリティ",q:"スマートコントラクトの「リエントランシー攻撃」が成立する主な原因は？",opts:["Solidityのコンパイルバグ","ガス代の上限設定ミス","ERC-20の仕様上の欠陥","外部コントラクト呼び出しでETH送金前に残高を更新しない実装ミス"],ans:3,exp:"The DAOハック(2016)で有名なリエントランシーは、ETH送金前に残高を更新しないため同一トランザクション内で繰り返し引き出しができる脆弱性です。"},
-    {cat:"暗号理論",q:"zkSNARKの「zk」が意味するものは？",opts:["Zero Knowledge（ゼロ知識）— 証明内容を明かさずに真実を証明できる性質","Zero Key — 鍵なしで動く暗号","Zero Kost — コストゼロの証明","Zonal Kernel — 領域分割アルゴリズム"],ans:0,exp:"ゼロ知識証明とは、ある命題が真であることを、その命題の内容（秘密情報）を一切明かさずに証明できる暗号技術です。プライバシー保護に活用されます。"},
-    {cat:"DeFi",q:"「MEV（Maximal Extractable Value）」とは何を指しますか？",opts:["マイニング電力効率の指標","バリデーターがブロック内のトランザクション順序を操作して得られる追加利益","DeFiの年間収益率","マルチシグウォレットの手数料"],ans:1,exp:"MEVはブロック生成者がトランザクションの追加・除外・並び替えを行うことで標準報酬を超えて得られる価値です。フロントランニングやサンドウィッチ攻撃がその例です。"},
-    {cat:"スケーリング",q:"「Danksharding」がイーサリアムのスケーリングに貢献する仕組みは？",opts:["トランザクションをサイドチェーンに移す","PoWに戻してスループットを上げる","データ可用性サンプリングにより全ノードが全データを保存せずにスケールできるようにする","ガス代の上限を撤廃する"],ans:2,exp:"Dankshardingはデータブロブ（blob）を使いロールアップのデータ可用性を安価に提供します。全ノードが全データを持たなくても安全に検証できるデータ可用性サンプリングが核心です。"},
-    {cat:"セキュリティ",q:"「51%攻撃」で実際に可能なことはどれですか？",opts:["スマートコントラクトのコードを書き換える","任意のウォレットから資金を盗む","二重支払い（ダブルスペンド）や過去のブロック履歴を書き換える","全ユーザーのパスワードをリセットする"],ans:2,exp:"51%攻撃でハッシュレートの過半数を掌握した攻撃者は自分のトランザクション履歴を書き換えて二重支払いを行えます。ただしコントラクトや他者ウォレットには直接アクセスできません。"},
-    {cat:"ブロックチェーン理論",q:"「VDF（Verifiable Delay Function）」がブロックチェーンで使われる主な目的は？",opts:["トランザクション速度の向上","スマートコントラクトのデバッグ","計算に一定時間かかることを証明し予測不可能な乱数生成などに活用する","ウォレットの秘密鍵生成"],ans:2,exp:"VDFは特定の計算が最低でも一定時間かかることを証明できる関数で、ランダムネスビーコンやPoSのバリデーター選択で操作耐性を高めるために使われます。"},
-    {cat:"DAOガバナンス",q:"「Vote Delegation（投票委任）」の主な目的は何ですか？",opts:["トークン価格を安定させる","投票参加率の低下問題に対処し専門知識を持つ代表者に投票権を委ねられるようにする","二重投票を防止する","匿名投票を実現する"],ans:1,exp:"多くのDAO保有者は全提案を追えないため、信頼できる専門家に投票権を委任（デリゲート）できる仕組みが投票参加率と意思決定の質を同時に高めます。"},
-    {cat:"暗号理論",q:"「KZGコミットメント」がEIP-4844（Proto-Danksharding）で採用された主な理由は？",opts:["実装が簡単なため","ゼロ知識証明不要でデータの正確性を小さなサイズで証明できるため","PoWより安全なため","ガス代が完全に0になるため"],ans:1,exp:"KZG（Kate-Zaverucha-Goldberg）コミットメントは多項式コミットメント方式で、大きなデータブロブを小さな証明（48バイト）で正確さを保証できるためEIP-4844のデータ可用性に採用されました。"}
-  ]
-};
+  /* ── 入門編 ── */
+  {
+    name:"入門編", color:"#1a5f5f", isMaster:false,
+    qs:[
+      {type:"bushido", q:"武士が日常的に帯刀していた刀は何本ですか？",
+       choices:["1本","2本","3本","4本"],
+       ans:1, note:"武士は大刀（打刀）と小刀（脇差）の2本を腰に差すことを許された「二刀流」の帯刀が慣例でした。これを「大小」と呼びます。"},
+      {type:"web3", q:"ブロックチェーンの最大の特徴はどれですか？",
+       choices:["中央管理者が全データを統括する","一度記録したデータの改ざんが極めて困難","処理速度が従来のDBより常に速い","インターネット不要で動作する"],
+       ans:1, note:"分散した多数のノードにデータが保存されるため、過去の改ざんには膨大な計算力が必要。これがブロックチェーンの改ざん耐性の源です。"},
+      {type:"bushido", q:"「武士に二言はない」とはどのような意味ですか？",
+       choices:["武士は二つの言語を話せる","一度言ったことは必ず守る","二度同じことを言わない","言葉より行動が大切"],
+       ans:1, note:"武士道における「誠」の精神を表した言葉。一度口にした約束は命に代えても守るという覚悟を示します。"},
+      {type:"web3", q:"「DAO」の正式名称はどれですか？",
+       choices:["Decentralized Autonomous Organization","Digital Asset Operation","Distributed Account Order","Decentralized Application Overlay"],
+       ans:0, note:"DAOは「分散型自律組織」。スマートコントラクトとトークン投票で中央管理者なしに動く組織形態。BushiDAOもこの仕組みを活用します。"},
+      {type:"bushido", q:"武士が主君のために命を捧げる精神を何と呼びますか？",
+       choices:["義","忠","仁","礼"],
+       ans:1, note:"「忠」は主君への忠誠心を表す武士道の根本徳目のひとつ。主君のためなら命を惜しまないという精神で、武士の行動規範の柱でした。"},
+    ]
+  },
 
-let currentMode = null, questions = [], cur = 0, score = 0, answered = false;
+  /* ── 中級編 ── */
+  {
+    name:"中級編", color:"#b8860b", isMaster:false,
+    qs:[
+      {type:"bushido", q:"「葉隠（はがくれ）」の冒頭の有名な言葉はどれですか？",
+       choices:["仁者は敵なし","武士道とは死ぬことと見つけたり","剣は心なり","名こそ惜しけれ"],
+       ans:1, note:"「武士道とは死ぬことと見つけたり」は山本常朝の言葉。死を覚悟することで初めて真の自由と奉公が生まれるという逆説的な武士道論です。"},
+      {type:"web3", q:"NFTとは何の略称ですか？",
+       choices:["Non-Fungible Token","New Financial Transaction","Network Function Technology","Non-Federal Transfer"],
+       ans:0, note:"NFT＝Non-Fungible Token（非代替性トークン）。同じ価値に交換できない唯一無二のデジタル資産。キャラクター・アート・ゲームアイテムなどに使われます。"},
+      {type:"bushido", q:"宮本武蔵が著した兵法書はどれですか？",
+       choices:["葉隠","五輪書","甲陽軍鑑","兵法家伝書"],
+       ans:1, note:"『五輪書』は宮本武蔵が晩年に著した兵法の極意書。地・水・火・風・空の五巻からなり、剣の技術を超えた「道」としての兵法哲学を説きます。"},
+      {type:"web3", q:"スマートコントラクトについて正しい説明はどれですか？",
+       choices:["弁護士が電子化した契約書","ブロックチェーン上で自動実行されるプログラム","AIが契約条件を自動交渉するシステム","政府が認可した電子決済の仕組み"],
+       ans:1, note:"スマートコントラクトは「もしAならばBを実行」という処理を仲介者なしに行えるコード。DAOのルール実行の基盤です。"},
+      {type:"bushido", q:"武士が元服（成人）する際に行う儀式で、初めて結う髪型はどれですか？",
+       choices:["丁髷（ちょんまげ）","月代（さかやき）","总髪（そうはつ）","前髪立て"],
+       ans:1, note:"月代は頭頂部の髪を剃った武士特有の髪型。元服（成人の儀式）の際に初めて月代を剃り、大人の武士として認められました。"},
+      {type:"web3", q:"ガバナンストークンの主な役割はどれですか？",
+       choices:["法定通貨との交換","プロジェクトの意思決定に投票できる権利","取引手数料の割引","ゲーム内アイテムの購入"],
+       ans:1, note:"ガバナンストークンを持つとDAOの規約変更・予算配分・新機能の採用などをコミュニティで投票して決められます。BushiDAOの「評定」の仕組みです。"},
+      {type:"bushido", q:"「甲陽軍鑑」に記された、武田信玄の軍法の根本とされる精神はどれですか？",
+       choices:["速さは力なり","人は城、人は石垣、人は堀","義を見てせざるは勇なきなり","名将は戦わずして勝つ"],
+       ans:1, note:"「人は城、人は石垣、人は堀、情けは味方、仇は敵なり」は信玄の言葉。物理的な城より人心の結束を重んじる武将としての思想を示します。"},
+    ]
+  },
 
-function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+  /* ── 奥義編 ── */
+  {
+    name:"奥義編", color:"#8b1a1a", isMaster:false,
+    qs:[
+      {type:"bushido", q:"柳生宗矩が著した剣道の奥義書はどれですか？",
+       choices:["五輪書","兵法家伝書","葉隠","武道初心集"],
+       ans:1, note:"『兵法家伝書』は柳生宗矩が徳川将軍家に献上した剣法の極意書。剣術を通じて心を磨く「活人剣」の思想が説かれています。"},
+      {type:"web3", q:"Proof of Stake（PoS）の特徴として正しいものはどれですか？",
+       choices:["計算競争でブロックを生成する","保有量に応じて検証者が選ばれる","マイニングマシンが必要","ビットコインが採用している方式"],
+       ans:1, note:"PoSはコインを「担保（ステーク）」してバリデータになる方式。Ethereumは2022年にPoWからPoSへ移行（The Merge）し、消費電力を大幅削減しました。"},
+      {type:"bushido", q:"武士が切腹の際に介錯人を立てる本来の目的はどれですか？",
+       choices:["見届け人として証人になるため","苦しみを長引かせないよう首を斬るため","作法を指導するため","刀を清めるため"],
+       ans:1, note:"介錯人は切腹した武士が苦しむ時間を最小にするため首を斬り落とす役割。武士道における「慈悲」と「礼」の精神が介錯という作法に込められています。"},
+      {type:"web3", q:"マルチシグ（マルチシグネチャ）ウォレットの説明として正しいのはどれですか？",
+       choices:["複数のチェーンに同時送金できる","複数の署名が揃って初めて取引が承認される","一つで複数通貨を管理できる","自動分散投資を行う"],
+       ans:1, note:"マルチシグはm-of-n署名方式。例：3人中2人が署名しないと送金できない設定。DAOの資金管理の安全性向上に不可欠な仕組みです。"},
+      {type:"bushido", q:"江戸時代、武士が「仇討ち」を行う際に必要だったものはどれですか？",
+       choices:["藩主の口頭許可","幕府への届け出と許可状","寺社への誓約","複数の証人の立ち会い"],
+       ans:1, note:"仇討ちは武士道の「義」と「忠」に基づく行為でしたが、江戸時代には幕府への届け出と許可が必要でした。無断の仇討ちは処罰の対象となりました。"},
+      {type:"web3", q:"ゼロ知識証明（ZKP）の特徴を正しく説明しているのはどれですか？",
+       choices:["知識がないことを証明する技術","内容を明かさずに知っていることを証明できる","ゼロコストで取引を実行する方法","ブロックチェーンのデータを削除する手法"],
+       ans:1, note:"ZKP（Zero-Knowledge Proof）は秘密を明かさずに「その秘密を知っている」ことを証明できる暗号技術。プライバシー保護やZK-Rollupに活用されます。"},
+      {type:"bushido", q:"「克己復礼」の元となった儒教の言葉で「己に勝つ」とはどういう意味ですか？",
+       choices:["敵に勝利する","自己の欲や感情を抑制する","試練を乗り越える","肉体的に強くなる"],
+       ans:1, note:"克己とは「自分の欲望・怒り・恐れといった感情を抑制すること」。武士道ではこの自己制御こそが礼の実践であり、真の強さの源とされました。"},
+    ]
+  },
 
-function levelOf(q) {
-  if (Q.beginner.includes(q)) return 'beginner';
-  if (Q.intermediate.includes(q)) return 'intermediate';
-  return 'advanced';
-}
+  /* ── 武士道マスター編（番外） ── */
+  {
+    name:"武士道マスター編", color:"#4a1a6e", isMaster:"bushido",
+    qs:[
+      {type:"master", q:"「兵は詭道なり」の出典はどれですか？",
+       choices:["孫子","葉隠","五輪書","韓非子"],
+       ans:0, note:"孫子・計篇の言葉。「戦いは騙し合いである」という意味で、武士道の「誠」とは相反するように見えますが、戦略と誠義を使い分ける武将の思想として取り込まれました。"},
+      {type:"master", q:"武士道の精神的支柱となった禅宗を日本に伝えた人物はだれですか？",
+       choices:["道元","栄西","法然","親鸞"],
+       ans:1, note:"栄西（1141〜1215年）が宋から臨済宗を持ち帰り、鎌倉武家社会に広めました。禅の「不動心」「刹那の判断力」は武士道と深く融合しました。"},
+      {type:"master", q:"室町時代に成立した「武家諸法度」の精神的根拠として重視された儒学の概念はどれですか？",
+       choices:["知行合一","大義名分","格物致知","仁政"],
+       ans:1, note:"大義名分論は「正しい名目と道義」を根拠に行動する儒学の概念。徳川幕府は武家諸法度でこれを規範として武士の主従関係と秩序を正当化しました。"},
+      {type:"master", q:"「不動智神妙録」を著した禅僧はだれですか？",
+       choices:["沢庵宗彭","道元","一休宗純","夢窓疎石"],
+       ans:0, note:"沢庵宗彭（1573〜1645年）が柳生宗矩に送った書状をまとめたもの。「心を一所に留めない」不動の境地が剣の極意であると説き、武士道と禅の融合を体現しました。"},
+      {type:"master", q:"武士が「名こそ惜しけれ」と詠んだことで知られる和歌が由来する価値観はどれですか？",
+       choices:["武勇を誇示する精神","名誉を命より重んじる精神","和歌を嗜む文化的素養","主君への忠誠の誓い"],
+       ans:1, note:"「名こそ惜しけれ」は死よりも名誉の汚損を恐れる武士道の精神を表します。源平時代から続く「恥を知る」文化が武士道の礎となっています。"},
+      {type:"master", q:"戦国時代の武将・上杉謙信が篤く信仰し「義の武将」と呼ばれる根拠となった神仏はどれですか？",
+       choices:["八幡神","毘沙門天","春日大社","愛宕権現"],
+       ans:1, note:"上杉謙信は毘沙門天を篤く信仰し「毘」の字を旗印にしました。私欲なき「義」のための戦いという姿勢が、後世の武士道における義の象徴とされています。"},
+      {type:"master", q:"「武道初心集」を著し「武士は常に死を覚悟せよ」と説いた江戸時代の武士はだれですか？",
+       choices:["山本常朝","大道寺友山","柳生宗矩","山鹿素行"],
+       ans:1, note:"大道寺友山（1639〜1730年）の著。『葉隠』と並ぶ武士道論の名著で、日々の生死を覚悟した心構えと礼節の実践を説いています。"},
+      {type:"master", q:"武士の子弟教育で「文武両道」が重んじられた際の「文」として特に重視された学問はどれですか？",
+       choices:["仏教学","国学","儒学","神道"],
+       ans:2, note:"江戸時代の武士教育では儒学（特に朱子学）が「文」の中核とされました。忠・義・礼・仁といった概念を体系的に学ぶことが武士の素養とされました。"},
+      {type:"master", q:"「義を見てせざるは勇なきなり」の出典はどれですか？",
+       choices:["葉隠","論語","孫子","五輪書"],
+       ans:1, note:"論語・為政篇の言葉（孔子）。「正しいことと知りながら行わないのは勇気がない証拠」という意。武士道の「義」と「勇」を結びつける根拠として広く引用されました。"},
+      {type:"master", q:"江戸時代、武士が公式な場で着用する礼装で、袴に合わせた上着の名称はどれですか？",
+       choices:["羽織","裃（かみしも）","直垂（ひたたれ）","狩衣（かりぎぬ）"],
+       ans:1, note:"裃（かみしも）は上下が揃いの麻製の礼装で、武士が公式な場で着用しました。袴と肩衣からなり、江戸時代の武家の正装として定着した武士固有の装束です。"},
+    ]
+  },
 
-function startMode(key) {
-  currentMode = key;
-  if (key === 'all') {
-    questions = shuffle([...Q.beginner, ...Q.intermediate, ...Q.advanced]);
-  } else {
-    questions = shuffle(Q[key]);
+  /* ── Web3マスター編（番外） ── */
+  {
+    name:"Web3マスター編", color:"#0a4a7a", isMaster:"web3",
+    qs:[
+      {type:"web3m", q:"Ethereumのコンセンサスメカニズムが「The Merge」でPoWからPoSに移行した年はいつですか？",
+       choices:["2021年","2022年","2023年","2024年"],
+       ans:1, note:"2022年9月にEthereumはPoWからPoSへ移行（The Merge）。消費電力を約99.95%削減し、ネットワークの持続可能性と分散化を大きく前進させました。"},
+      {type:"web3m", q:"DAOの投票において「クジラ問題」を軽減するために設計された投票方式はどれですか？",
+       choices:["多数決（1トークン1票）","二次投票（Quadratic Voting）","委任投票（Delegated Voting）","ランダム抽選"],
+       ans:1, note:"二次投票（Quadratic Voting）は投票コストが票数の二乗に比例する仕組み。大口保有者の影響力を抑制しつつ少数意見も反映できる、より公平なガバナンス設計です。"},
+      {type:"web3m", q:"スマートコントラクトの「再入攻撃（Reentrancy Attack）」で2016年に起きた事件はどれですか？",
+       choices:["Mt.Goxハック","The DAO事件","Poly Networkハック","Binanceハック"],
+       ans:1, note:"2016年のThe DAO事件では再入攻撃により約360万ETHが流出。この事件がEthereumのハードフォーク（EthereumとEthereum Classicの分裂）の引き金となりました。"},
+      {type:"web3m", q:"ERC-721とERC-20の最大の違いはどれですか？",
+       choices:["ERC-721は代替不可能なトークン規格","ERC-721は高速処理専用の規格","ERC-721は法定通貨連動トークン","ERC-721はガバナンス専用規格"],
+       ans:0, note:"ERC-20は同一価値で交換可能（代替性あり）な汎用トークン規格。ERC-721は各トークンが一意のIDを持ち代替不可能（Non-Fungible）なNFT規格です。"},
+      {type:"web3m", q:"「ラグプル（Rug Pull）」とはWeb3のどのようなリスクを指しますか？",
+       choices:["スマートコントラクトのバグによる損失","開発チームが資金を持ち逃げする詐欺","ガス代が急騰して取引できない状態","ウォレットの秘密鍵が盗まれること"],
+       ans:1, note:"ラグプルはプロジェクトの開発チームが投資家から資金を集めた後に突然消える詐欺手法。DeFiやNFT領域で頻発し、プロジェクト選定時の最大リスクのひとつです。"},
+      {type:"web3m", q:"「オプティミスティックロールアップ」の特徴はどれですか？",
+       choices:["全取引をL1で検証してからL2に記録する","取引をデフォルトで正当とみなし不正時のみ検証する","ZKPを使ってL1の検証を省略する","ビットコインのSidechain技術"],
+       ans:1, note:"オプティミスティックロールアップ（OptimismやArbitrum）は取引を「楽観的に正当」とみなしてL2で処理し、不正申告があった場合のみL1で検証する方式です。"},
+      {type:"web3m", q:"分散型取引所（DEX）でAMMが使う「x × y = k」の式において、kが表すものはどれですか？",
+       choices:["手数料の総額","流動性プールの定数","ガス代の上限","スリッページの許容幅"],
+       ans:1, note:"Uniswap等のAMM（自動マーケットメーカー）では流動性プールの2資産の積を定数kとして維持します。売買によって片方が減れば自動的にもう片方が増え価格が決まります。"},
+      {type:"web3m", q:"「フラッシュローン攻撃」が可能な本質的な理由はどれですか？",
+       choices:["秘密鍵が解読されるため","担保なし借入・利用・返済が1トランザクション内で完結するため","ガス代を操作できるため","オラクルが改ざんされるため"],
+       ans:1, note:"フラッシュローンはDeFiの「1ブロック内に借入〜返済を完結」という設計を悪用した攻撃。担保不要で巨額を借り価格操作や裁定取引を行い、ブロック内に返済します。"},
+      {type:"web3m", q:"NFTのメタデータをオンチェーンで保存する際に一般的に使われるデータ形式はどれですか？",
+       choices:["PDF","Base64エンコードのSVGまたはJSON","MP4動画","Excelファイル"],
+       ans:1, note:"NFTのオンチェーンメタデータはBase64エンコードしたSVGやJSONとしてスマートコントラクトに直接埋め込まれます。外部サーバーに依存しないため永続性が高まります。"},
+      {type:"web3m", q:"EIP-4337（アカウント抽象化）の目的として正しいものはどれですか？",
+       choices:["ガス代をゼロにする","EOAとスマートコントラクトウォレットの機能差をなくしUXを改善する","L2のトランザクション速度を10倍にする","NFTの転送コストを削減する"],
+       ans:1, note:"EIP-4337はEthereumのアカウント抽象化提案。ソーシャルリカバリー・ガスレス取引・バンドル決済など従来のEOAにはなかった柔軟性をユーザーに提供し、Web3のUX革新の鍵です。"},
+    ]
   }
-  cur = 0; score = 0; answered = false;
-  document.getElementById('home').style.display = 'none';
-  document.getElementById('result').classList.remove('active');
-  document.getElementById('quiz').classList.add('active');
-  renderQuestion();
+];
+
+const RANKS=[
+  {min:90,rank:"皆伝",label:"KAIDEN",msg:"完璧な境地。BushiDAOの侍として十分な素養があります。コミュニティの中心で活躍してください。"},
+  {min:70,rank:"免許",label:"MENKYO",msg:"確かな理解。苦手な分野を繰り返せば、さらなる高みへ到達できます。"},
+  {min:50,rank:"目録",label:"MOKUROKU",msg:"基礎はできています。解説をもう一度読んで理解を深めましょう。"},
+  {min:0, rank:"入門",label:"NYUMON",msg:"これから学ぶ余白が多い状態。焦らず一歩ずつ、武士道の道を歩みなさい。"}
+];
+
+const MASTER_RANKS=[
+  {min:100,rank:"武士道の神髄",label:"SHINZUI",msg:"全問正解。真の武士道マスター。BushiDAOの精神的支柱として迎え入れます。"},
+  {min:80, rank:"兵法の達人",label:"TATSUJIN",msg:"深い理解を持つ者。あとわずかで神髄の境地へ。"},
+  {min:60, rank:"修練の士",label:"SHUREN",msg:"相当な素養があります。さらなる古典研究で真髄に近づけます。"},
+  {min:0,  rank:"武士道入門",label:"NYUMON",msg:"武士道の奥深さを知った第一歩。古典を紐解いて再挑戦してください。"}
+];
+
+const WEB3_RANKS=[
+  {min:100,rank:"Web3の覇者",label:"HASHA",msg:"全問正解。DeFi・DAO・暗号理論すべてを制した真の覇者。BushiDAOの技術的支柱です。"},
+  {min:80, rank:"ブロック鍛冶",label:"KAJI",msg:"高い技術理解。あと一歩で覇者の域へ。"},
+  {min:60, rank:"トークン修行者",label:"SHUGYO",msg:"基礎は固まっています。深層技術をさらに掘り下げましょう。"},
+  {min:0,  rank:"ウォレット入門",label:"NYUMON",msg:"Web3の世界への第一歩。鍛錬あるのみ。"}
+];
+
+let lv=0,qi=0,score=0,answered=false,bC=0,bT=0,wC=0,wT=0,mC=0,mT=0;
+const KEYS=['A','B','C','D'];
+
+function setScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goStart(){setScreen('screen-start');}
+
+function startQuiz(level){
+  lv=level;qi=0;score=0;answered=false;bC=bT=wC=wT=mC=mT=0;
+  const L=LEVELS[lv];
+  document.getElementById('qh-level').textContent=L.name;
+  ['screen-quiz','screen-result'].forEach(id=>document.getElementById(id).style.setProperty('--cl',L.color));
+  setScreen('screen-quiz');
+  render();
 }
 
-function renderQuestion() {
-  const m = MODES[currentMode];
-  const q = questions[cur];
-  const pct = Math.round((cur / questions.length) * 100);
-
-  document.getElementById('q-counter').textContent = `問題 ${cur + 1} / ${questions.length}`;
-  document.getElementById('score-pill').textContent = `${score}点`;
-  document.getElementById('score-pill').style.cssText = `background:${m.color}22;color:${m.color};padding:2px 10px;border-radius:20px;font-family:'Syne',sans-serif;font-weight:700`;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-fill').style.background = m.bar;
-
-  const lvKey = currentMode === 'all' ? levelOf(q) : currentMode;
-  const lvM = MODES[lvKey];
-  let badgesHtml = `<span class="q-badge ${m.cls}">${m.label}</span>`;
-  if (currentMode === 'all') badgesHtml += `<span class="q-badge lv-${lvKey}">${lvM.label}</span>`;
-  badgesHtml += `<span class="q-badge cat-badge">${q.cat}</span>`;
-  document.getElementById('q-badges').innerHTML = badgesHtml;
-  document.getElementById('q-text').textContent = q.q;
-
-  const opts = q.opts.map((o, i) => `
-    <button class="opt-btn" id="opt${i}" onclick="choose(${i})">
-      <span class="opt-index">${['A','B','C','D'][i]}</span>
-      <span>${o}</span>
-    </button>`).join('');
-  document.getElementById('opts').innerHTML = opts;
-  document.getElementById('feedback').innerHTML = '';
-  document.getElementById('next-area').innerHTML = '';
+function render(){
+  const L=LEVELS[lv],q=L.qs[qi];answered=false;
+  document.getElementById('qh-prog').style.width=Math.round(qi/L.qs.length*100)+'%';
+  document.getElementById('qh-num').textContent=`${qi+1} / ${L.qs.length}`;
+  document.getElementById('score-live').textContent=score;
+  document.getElementById('total-live').textContent=qi;
+  const b=document.getElementById('q-badge');
+  if(q.type==='master'){b.textContent='武士道マスター';b.className='q-badge master';}
+  else if(q.type==='web3m'){b.textContent='Web3マスター';b.className='q-badge web3';}
+  else if(q.type==='bushido'){b.textContent='武士道';b.className='q-badge bushido';}
+  else{b.textContent='Web3';b.className='q-badge web3';}
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('explanation').style.display='none';
+  document.getElementById('next-btn').classList.remove('show');
+  document.getElementById('choices').innerHTML=q.choices.map((c,i)=>
+    `<button class="choice-btn" id="cb${i}" onclick="choose(${i})"><span class="choice-key">${KEYS[i]}</span><span>${c}</span></button>`
+  ).join('');
 }
 
-function choose(i) {
-  if (answered) return;
-  answered = true;
-  const q = questions[cur];
-  const correct = q.ans;
-  const isC = i === correct;
-  if (isC) score++;
-  const m = MODES[currentMode];
-
-  q.opts.forEach((_, j) => {
-    const b = document.getElementById('opt' + j);
-    b.disabled = true;
-    if (j === correct) b.className = 'opt-btn correct';
-    else if (j === i && !isC) b.className = 'opt-btn wrong';
-    else b.className = 'opt-btn reveal';
-  });
-
-  document.getElementById('feedback').innerHTML =
-    `<div class="feedback ${isC ? 'correct' : 'wrong'}">
-      <strong>${isC ? '✓ 正解！' : '✗ 不正解'}</strong>${q.exp}
-    </div>`;
-
-  const lbl = cur < questions.length - 1 ? '次の問題 →' : '結果を見る →';
-  document.getElementById('next-area').innerHTML =
-    `<button class="next-btn" style="background:${m.color}" onclick="nextQ()">${lbl}</button>`;
+function choose(i){
+  if(answered)return;answered=true;
+  const q=LEVELS[lv].qs[qi];
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const ok=i===q.ans;
+  if(ok){score++;document.getElementById('cb'+i).className='choice-btn correct';}
+  else{document.getElementById('cb'+i).className='choice-btn wrong';document.getElementById('cb'+q.ans).className='choice-btn reveal';}
+  if(q.type==='bushido'){bT++;if(ok)bC++;}
+  else if(q.type==='web3'){wT++;if(ok)wC++;}
+  else{mT++;if(ok)mC++;}
+  const exp=document.getElementById('explanation');
+  exp.style.display='block';
+  exp.innerHTML=`<strong>${ok?'正解！':'不正解'}</strong> — ${q.note}`;
+  document.getElementById('score-live').textContent=score;
+  document.getElementById('total-live').textContent=qi+1;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===LEVELS[lv].qs.length-1?'結果を見る →':'次の問題 →';
+  nb.classList.add('show');
 }
 
-function nextQ() {
-  cur++;
-  answered = false;
-  if (cur >= questions.length) showResult();
-  else renderQuestion();
+function nextQ(){qi++;qi>=LEVELS[lv].qs.length?showResult():render();}
+
+function showResult(){
+  setScreen('screen-result');
+  const L=LEVELS[lv],total=L.qs.length,pct=Math.round(score/total*100);
+  const ranks=L.isMaster==='bushido'?MASTER_RANKS:L.isMaster==='web3'?WEB3_RANKS:RANKS;
+  const r=ranks.find(r=>pct>=r.min);
+  document.getElementById('res-num').textContent=score;
+  document.getElementById('res-denom').textContent=`/ ${total}問`;
+  document.getElementById('res-rlabel').textContent=r.label+' — '+pct+'%';
+  document.getElementById('res-rank').textContent=r.rank;
+  document.getElementById('res-msg').textContent=r.msg;
+
+  let bdHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:0.05em">スコア</div>`;
+  if(L.isMaster==='bushido'){
+    bdHTML+=`<div class="sb-row"><div class="sb-label">武士道</div><div class="sb-bar-wrap"><div class="sb-bar master-bar" style="width:0%" id="bar-m"></div></div><div class="sb-val">${mC}/${mT}</div></div>`;
+  } else if(L.isMaster==='web3'){
+    bdHTML+=`<div class="sb-row"><div class="sb-label">Web3</div><div class="sb-bar-wrap"><div class="sb-bar web3" style="width:0%" id="bar-m"></div></div><div class="sb-val">${mC}/${mT}</div></div>`;
+  } else {
+    const bP=bT>0?Math.round(bC/bT*100):0,wP=wT>0?Math.round(wC/wT*100):0;
+    bdHTML+=`<div class="sb-row"><div class="sb-label">武士道</div><div class="sb-bar-wrap"><div class="sb-bar bushido" style="width:0%" id="bar-b"></div></div><div class="sb-val">${bC}/${bT}</div></div>`;
+    bdHTML+=`<div class="sb-row"><div class="sb-label">Web3</div><div class="sb-bar-wrap"><div class="sb-bar web3" style="width:0%" id="bar-w"></div></div><div class="sb-val">${wC}/${wT}</div></div>`;
+    setTimeout(()=>{document.getElementById('bar-b').style.width=bP+'%';document.getElementById('bar-w').style.width=wP+'%';},100);
+  }
+  document.getElementById('score-bd').innerHTML=bdHTML;
+  if(L.isMaster){
+    const mP=mT>0?Math.round(mC/mT*100):0;
+    setTimeout(()=>{const el=document.getElementById('bar-m');if(el)el.style.width=mP+'%';},100);
+  }
 }
 
-function showResult() {
-  const m = MODES[currentMode];
-  const total = questions.length;
-  const pct = Math.round((score / total) * 100);
-  let rank;
-  if (pct >= 90) rank = 'Web3マスター';
-  else if (pct >= 70) rank = 'Web3エキスパート';
-  else if (pct >= 50) rank = 'Web3学習中';
-  else rank = 'Web3入門者';
-
-  document.getElementById('quiz').classList.remove('active');
-  document.getElementById('result').classList.add('active');
-
-  document.getElementById('result-mode-badge').innerHTML =
-    `<span class="q-badge ${m.cls}">${m.label}</span>`;
-  document.getElementById('result-score').innerHTML =
-    `<span style="color:${m.color}">${score}</span><span class="result-total"> / ${total}</span>`;
-  document.getElementById('result-pct').textContent = `正答率 ${pct}%`;
-  document.getElementById('result-rank').textContent = rank;
-  document.getElementById('result-bk').innerHTML = `
-    <div class="bk-cell"><div class="bkn" style="color:#1D9E75">${score}</div><div class="bk-lbl">正解</div></div>
-    <div class="bk-cell"><div class="bkn" style="color:#E24B4A">${total - score}</div><div class="bk-lbl">不正解</div></div>
-    <div class="bk-cell"><div class="bkn" style="color:${m.color}">${pct}%</div><div class="bk-lbl">正答率</div></div>`;
-  document.getElementById('retry-btn').style.background = m.color;
-}
-
-function retry() {
-  startMode(currentMode);
-}
-
-function goHome() {
-  document.getElementById('result').classList.remove('active');
-  document.getElementById('quiz').classList.remove('active');
-  document.getElementById('home').style.display = '';
-}
+function retryQuiz(){startQuiz(lv);}
 </script>
 </body>
 </html>
