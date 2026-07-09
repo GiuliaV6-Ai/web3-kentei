@@ -419,30 +419,30 @@ const LEVELS = [
 
 /* 通常レベル共通段位 */
 const RANKS=[
-  {min:90, rank:"極伝",  label:"GOKUDEN", msg:"極みの境地。BushiDAOの真の体現者として、コミュニティの先頭に立ってください。"},
-  {min:70, rank:"皆伝",  label:"KAIDEN",  msg:"確かな全伝。あとわずかで極みの境地へ。苦手な問いを繰り返し磨け。"},
-  {min:50, rank:"奥伝",  label:"OUDEN",   msg:"奥義の入口に立った。さらなる鍛錬で皆伝の域が見えてくる。"},
-  {min:30, rank:"中伝",  label:"CHUDEN",  msg:"修錬の途上にある。基礎を固め直し、次の段へ挑め。"},
-  {min:10, rank:"初伝",  label:"SHODEN",  msg:"初陣を終えた者。繰り返しの稽古が真の力を生む。"},
-  {min:0,  rank:"入門",  label:"NIUMON",  msg:"武士道とWeb3の道への第一歩。焦らず、一歩ずつ前へ進め。"}
+  {min:90, rank:"極",  label:"GOKU", msg:"極みの境地。BushiDAOの真の体現者として、コミュニティの先頭に立ってください。"},
+  {min:70, rank:"皆",  label:"KAI",  msg:"確かな全伝。あとわずかで極みの境地へ。苦手な問いを繰り返し磨け。"},
+  {min:50, rank:"奥",  label:"OU",   msg:"奥義の入口に立った。さらなる鍛錬で皆伝の域が見えてくる。"},
+  {min:30, rank:"中",  label:"CHU",  msg:"修錬の途上にある。基礎を固め直し、次の段へ挑め。"},
+  {min:10, rank:"初",  label:"SHO",  msg:"初陣を終えた者。繰り返しの稽古が真の力を生む。"},
+  {min:0,  rank:"入",  label:"NIU",  msg:"武士道とWeb3の道への第一歩。焦らず、一歩ずつ前へ進め。"}
 ];
 
 /* 皆伝の巻（武士道番外）専用段位 */
 const MASTER_RANKS=[
-  {min:100,rank:"極伝 · 武士道神髄", label:"GOKUDEN", msg:"全問正解。武士道の真髄を体得した者。BushiDAOの精神的支柱として迎え入れる。"},
-  {min:80, rank:"皆伝 · 武士道",     label:"KAIDEN",  msg:"深い理解を持つ武士。あとわずかで神髄の境地へ。"},
-  {min:60, rank:"奥伝 · 武士道",     label:"OUDEN",   msg:"相当な素養がある。さらなる古典研究で皆伝に近づける。"},
-  {min:30, rank:"中伝 · 武士道",     label:"CHUDEN",  msg:"基礎は築かれている。葉隠・五輪書を手に取り再挑戦せよ。"},
-  {min:0,  rank:"入門 · 武士道",     label:"NIUMON",  msg:"武士道の奥深さを知った第一歩。古典を紐解いて再挑戦してください。"}
+  {min:100,rank:"極 · 武士道神髄", label:"GOKU", msg:"全問正解。武士道の真髄を体得した者。BushiDAOの精神的支柱として迎え入れる。"},
+  {min:80, rank:"皆 · 武士道",     label:"KAI",  msg:"深い理解を持つ武士。あとわずかで神髄の境地へ。"},
+  {min:60, rank:"奥 · 武士道",     label:"OU",   msg:"相当な素養がある。さらなる古典研究で皆伝に近づける。"},
+  {min:30, rank:"中 · 武士道",     label:"CHU",  msg:"基礎は築かれている。葉隠・五輪書を手に取り再挑戦せよ。"},
+  {min:0,  rank:"入 · 武士道",     label:"NIU",  msg:"武士道の奥深さを知った第一歩。古典を紐解いて再挑戦してください。"}
 ];
 
 /* 極伝の巻（Web3番外）専用段位 */
 const WEB3_RANKS=[
-  {min:100,rank:"極伝 · Web3覇者",   label:"GOKUDEN", msg:"全問正解。DeFi・DAO・暗号理論すべてを制した極みの使い手。BushiDAOの技術的支柱です。"},
-  {min:80, rank:"皆伝 · Web3",       label:"KAIDEN",  msg:"高い技術理解。あと一歩で極みの域へ。"},
-  {min:60, rank:"奥伝 · Web3",       label:"OUDEN",   msg:"基礎は固まっている。深層技術をさらに掘り下げよ。"},
-  {min:30, rank:"中伝 · Web3",       label:"CHUDEN",  msg:"修錬の途上。DeFiとZKPの理解を深めて再挑戦せよ。"},
-  {min:0,  rank:"入門 · Web3",       label:"NIUMON",  msg:"Web3の世界への第一歩。鍛錬あるのみ。"}
+  {min:100,rank:"極 · Web3覇者",   label:"GOKU", msg:"全問正解。DeFi・DAO・暗号理論すべてを制した極みの使い手。BushiDAOの技術的支柱です。"},
+  {min:80, rank:"皆 · Web3",       label:"KAI",  msg:"高い技術理解。あと一歩で極みの域へ。"},
+  {min:60, rank:"奥 · Web3",       label:"OU",   msg:"基礎は固まっている。深層技術をさらに掘り下げよ。"},
+  {min:30, rank:"中 · Web3",       label:"CHU",  msg:"修錬の途上。DeFiとZKPの理解を深めて再挑戦せよ。"},
+  {min:0,  rank:"入 · Web3",       label:"NIU",  msg:"Web3の世界への第一歩。鍛錬あるのみ。"}
 ];
 
 let lv=0,qi=0,score=0,answered=false,bC=0,bT=0,wC=0,wT=0,mC=0,mT=0;
