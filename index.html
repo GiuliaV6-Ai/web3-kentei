@@ -116,6 +116,23 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 .btn-outline{font-family:'Noto Serif JP',serif;background:transparent;color:var(--ink);border:1.5px solid var(--border);padding:12px 28px;border-radius:3px;font-size:14px;cursor:pointer;transition:border-color 0.15s;}
 .btn-outline:hover{border-color:var(--ink);}
 @media(max-width:480px){.level-card{padding:14px 16px;}.lc-rank{font-size:22px;min-width:34px;}.choice-btn{padding:12px 14px;font-size:13px;}}
+
+/* Phase C — API exam + claim */
+.wallet-box{margin:16px 0 8px;padding:14px 16px;background:white;border:1.5px solid var(--border);border-radius:4px;}
+.wallet-box label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:0.04em;}
+.wallet-box input{width:100%;font-family:'Space Mono',monospace;font-size:12px;padding:10px 12px;border:1.5px solid var(--border);border-radius:3px;background:var(--paper);color:var(--ink);}
+.wallet-box input:focus{outline:none;border-color:var(--teal);}
+.wallet-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;}
+.claim-box{width:100%;margin:16px 0 20px;padding:18px 20px;background:linear-gradient(135deg,#eef5ee 0%,#f5f0e8 100%);border:2px solid var(--teal);border-radius:4px;text-align:left;}
+.claim-box.fail{background:#fef0f0;border-color:var(--red-light);}
+.claim-title{font-size:14px;font-weight:700;color:var(--teal);margin-bottom:8px;}
+.claim-box.fail .claim-title{color:var(--red);}
+.claim-code{font-family:'Space Mono',monospace;font-size:11px;word-break:break-all;background:white;border:1px solid var(--border);padding:12px;border-radius:3px;max-height:120px;overflow:auto;margin:10px 0;}
+.choice-btn.selected{border-color:var(--ink);background:var(--paper2);}
+.choice-btn.selected .choice-key{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+.api-status{font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);margin-top:8px;}
+.api-status.err{color:var(--red-light);}
+
 </style>
 </head>
 <body>
@@ -135,6 +152,14 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
       <div class="start-title"><em>WEB3 KENTEI</em>検定試験</div>
       <div class="start-sub">武士道の精神とWeb3技術を問う、BushiDAO公認の試練</div>
     </div>
+    
+    <div class="wallet-box">
+      <label for="wallet-input">SBT用ウォレットアドレス（合格証明発行に必要）</label>
+      <input id="wallet-input" type="text" placeholder="0x..." autocomplete="off" spellcheck="false" />
+      <div class="wallet-hint">Discord で <code>/link_wallet</code> したアドレスと同じものを入力してください。練習のみなら空欄でも受験できます（合格証明は発行されません）。</div>
+      <div class="api-status" id="api-status">API: 接続確認中…</div>
+    </div>
+
     <div class="level-grid">
 
       <div class="level-card" style="--c:#2e7d5e" onclick="startQuiz(0)">
@@ -225,6 +250,22 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
       <div class="result-rank" id="res-rank">皆伝</div>
       <div class="result-msg" id="res-msg"></div>
       <div class="score-breakdown" id="score-bd"></div>
+      
+      <div class="claim-box" id="claim-box" style="display:none">
+        <div class="claim-title" id="claim-title">合格証明</div>
+        <div id="claim-body"></div>
+        <div id="result-wallet-wrap" style="display:none;margin:12px 0 8px">
+          <label for="result-wallet-input" style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px">ウォレットアドレス（/link_wallet と同じ）</label>
+          <input id="result-wallet-input" type="text" placeholder="0x..." autocomplete="off" spellcheck="false"
+            style="width:100%;font-family:'Space Mono',monospace;font-size:12px;padding:10px 12px;border:1.5px solid var(--border);border-radius:3px;background:white;color:var(--ink);box-sizing:border-box" />
+        </div>
+        <div class="claim-code" id="claim-code" style="display:none"></div>
+        <div class="result-actions" style="margin-top:12px;justify-content:flex-start">
+          <button type="button" class="btn-primary" id="btn-copy-claim" style="display:none" onclick="copyClaimCode()">証明をコピー</button>
+          <button type="button" class="btn-outline" id="btn-issue-claim" style="display:none" onclick="issueClaimFromResult()">合格証明を発行</button>
+        </div>
+      </div>
+
       <div class="result-actions">
         <button class="btn-outline" onclick="retryQuiz()">もう一度挑戦</button>
         <button class="btn-primary" onclick="goStart()">他の段位へ</button>
@@ -234,191 +275,10 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 
 </div>
 <script>
-const LEVELS = [
+/* BushiDAO WEB3検定 — Phase C: Worker-backed exam (no client answers) */
+const API_BASE = (localStorage.getItem('BUSHI_EXAM_API') || 'https://bushi-exam-worker.bushidao-exam.workers.dev').replace(/\/$/, '');
 
-  /* ── 入門の巻 ── */
-  {
-    name:"入門の巻 — NIUMON", color:"#2e7d5e", isMaster:false,
-    qs:[
-      {type:"bushido", q:"武士が日常的に帯刀していた刀は何本ですか？",
-       choices:["1本","2本","3本","4本"],
-       ans:1, note:"武士は大刀（打刀）と小刀（脇差）の2本を腰に差すことが慣例でした。これを「大小」と呼び、武士の身分を示す象徴でもありました。"},
-      {type:"web3", q:"ブロックチェーンの最大の特徴はどれですか？",
-       choices:["中央管理者が全データを統括する","一度記録したデータの改ざんが極めて困難","処理速度が従来のDBより常に速い","インターネット不要で動作する"],
-       ans:1, note:"分散した多数のノードにデータが保存されるため、過去の改ざんには膨大な計算力が必要です。これがブロックチェーンの改ざん耐性の源です。"},
-      {type:"bushido", q:"「武士に二言はない」とはどのような意味ですか？",
-       choices:["武士は二つの言語を話せる","一度言ったことは必ず守る","二度同じことを言わない","言葉より行動が大切"],
-       ans:1, note:"武士道における「誠」の精神を表した言葉。一度口にした約束は命に代えても守るという覚悟を示します。"},
-      {type:"web3", q:"「DAO」の正式名称はどれですか？",
-       choices:["Decentralized Autonomous Organization","Digital Asset Operation","Distributed Account Order","Decentralized Application Overlay"],
-       ans:0, note:"DAOは「分散型自律組織」。スマートコントラクトとトークン投票で中央管理者なしに動く組織形態。BushiDAOもこの仕組みを活用します。"},
-      {type:"bushido", q:"武士が主君のために命を捧げる精神を何と呼びますか？",
-       choices:["義","忠","仁","礼"],
-       ans:1, note:"「忠」は主君への忠誠心を表す武士道の根本徳目のひとつ。主君のためなら命を惜しまないという精神で、武士の行動規範の柱でした。"},
-    ]
-  },
-
-  /* ── 初伝の巻 ── */
-  {
-    name:"初伝の巻 — SHODEN", color:"#3a7a5e", isMaster:false,
-    qs:[
-      {type:"bushido", q:"「葉隠（はがくれ）」の冒頭の有名な言葉はどれですか？",
-       choices:["仁者は敵なし","武士道とは死ぬことと見つけたり","剣は心なり","名こそ惜しけれ"],
-       ans:1, note:"山本常朝の言葉。死を覚悟することで初めて真の自由と奉公が生まれるという逆説的な武士道論です。"},
-      {type:"web3", q:"NFTとは何の略称ですか？",
-       choices:["Non-Fungible Token","New Financial Transaction","Network Function Technology","Non-Federal Transfer"],
-       ans:0, note:"NFT＝Non-Fungible Token（非代替性トークン）。同じ価値に交換できない唯一無二のデジタル資産。キャラクター・アート・ゲームアイテムなどに使われます。"},
-      {type:"bushido", q:"武士が元服（成人）の儀式で初めて行う、頭頂部を剃る髪型を何と呼びますか？",
-       choices:["丁髷（ちょんまげ）","月代（さかやき）","総髪（そうはつ）","前髪立て"],
-       ans:1, note:"月代は頭頂部の髪を剃った武士特有の髪型。元服の際に初めて月代を剃り、大人の武士として認められました。"},
-      {type:"web3", q:"ウォレットの「秘密鍵」の説明として正しいのはどれですか？",
-       choices:["取引所へのログインID","資産を操作できる唯一の認証情報","ブロックチェーンのアドレス","NFTのメタデータ"],
-       ans:1, note:"秘密鍵は暗号資産の所有と操作を証明する唯一の情報。「Not your keys, not your coins」—秘密鍵を持たない限り本当の意味での資産の所有者ではありません。"},
-      {type:"bushido", q:"源氏と平氏が争った12世紀の大きな内乱を何と呼びますか？",
-       choices:["応仁の乱","治承・寿永の乱（源平合戦）","壬申の乱","承久の乱"],
-       ans:1, note:"治承・寿永の乱（1180〜1185年）、通称「源平合戦」。源頼朝・義経が平家を滅ぼし鎌倉幕府を開いた、武士が初めて政権を握った歴史的転換点です。"},
-      {type:"web3", q:"「ガス代」とは何を指しますか？",
-       choices:["マイニング施設の電気代","ブロックチェーンのトランザクション手数料","取引所の登録費用","ウォレットの月額利用料"],
-       ans:1, note:"ガス代はトランザクション処理の対価としてネットワークに払う手数料。Ethereumでは需要が高いときに高騰し、ユーザーコストに直結します。"},
-      {type:"bushido", q:"鎌倉時代の武士が重んじた戦場での基本精神「一騎打ち」が示す価値観はどれですか？",
-       choices:["数の力で敵を圧倒する","名乗りを上げ正々堂々と戦う","奇襲で素早く勝利する","退路を断って戦う"],
-       ans:1, note:"鎌倉武士は「やあやあ我こそは」と名乗りを上げて一対一で戦う礼節を重んじました。勝利より誉れある戦い方こそが武士としての矜持でした。"},
-    ]
-  },
-
-  /* ── 中伝の巻 ── */
-  {
-    name:"中伝の巻 — CHUDEN", color:"#b8860b", isMaster:false,
-    qs:[
-      {type:"bushido", q:"宮本武蔵が著した兵法書はどれですか？",
-       choices:["葉隠","五輪書","甲陽軍鑑","兵法家伝書"],
-       ans:1, note:"『五輪書』は宮本武蔵が晩年に著した兵法の極意書。地・水・火・風・空の五巻からなり、剣の技術を超えた「道」としての兵法哲学を説きます。"},
-      {type:"web3", q:"スマートコントラクトについて正しい説明はどれですか？",
-       choices:["弁護士が電子化した契約書","ブロックチェーン上で自動実行されるプログラム","AIが契約条件を自動交渉するシステム","政府が認可した電子決済の仕組み"],
-       ans:1, note:"スマートコントラクトは「もしAならばBを実行」という処理を仲介者なしに行えるコード。DAOのルール実行の基盤です。"},
-      {type:"bushido", q:"武田信玄の「人は城、人は石垣、人は堀」が示す思想として正しいのはどれですか？",
-       choices:["城の構造を最優先する","人の心の結束が最大の守りとなる","城主が全員を管理すべき","武士は城で訓練すべき"],
-       ans:1, note:"「情けは味方、仇は敵なり」と続くこの言葉は物理的な城より人心の結束を重んじる信玄の統率思想。武将が民と武士の心を掌握することの重要性を説きます。"},
-      {type:"web3", q:"ガバナンストークンの主な役割はどれですか？",
-       choices:["法定通貨との交換","プロジェクトの意思決定に投票できる権利","取引手数料の割引","ゲーム内アイテムの購入"],
-       ans:1, note:"ガバナンストークンを持つとDAOの規約変更・予算配分・新機能の採用などをコミュニティで投票して決められます。BushiDAOの「評定」の仕組みです。"},
-      {type:"bushido", q:"江戸時代の武士教育機関「藩校」で最も重視された教科はどれですか？",
-       choices:["算術","儒学（四書五経）","茶道","武芸のみ"],
-       ans:1, note:"藩校では儒学（四書五経）が文の中核とされました。忠・義・礼・仁の概念を体系的に学ぶことが武士の素養とされ、武芸と並んで文武両道が求められました。"},
-      {type:"web3", q:"DeFi（分散型金融）の特徴として正しいのはどれですか？",
-       choices:["銀行が管理する分散型サービス","中間業者なしにブロックチェーン上で金融サービスを提供する","政府が運営するデジタル通貨","取引所に限定した金融サービス"],
-       ans:1, note:"DeFiはスマートコントラクトで銀行・証券会社などの中間業者を排除した金融サービス。貸借・取引・保険など従来の金融機能を誰でも使えるオープンな形で提供します。"},
-      {type:"bushido", q:"「柔よく剛を制す」の精神を体現した日本武術の流派として最もよく知られるのはどれですか？",
-       choices:["示現流","神道無念流","柔術（起倒流など）","剣道"],
-       ans:2, note:"柔術は力で力に対抗せず相手の力を利用して制する技法。「柔よく剛を制す」の精神を体現し、現代の柔道・合気道の源流となりました。"},
-    ]
-  },
-
-  /* ── 奥伝の巻 ── */
-  {
-    name:"奥伝の巻 — OUDEN", color:"#8b4513", isMaster:false,
-    qs:[
-      {type:"bushido", q:"柳生宗矩が著した剣道の奥義書はどれですか？",
-       choices:["五輪書","兵法家伝書","葉隠","武道初心集"],
-       ans:1, note:"『兵法家伝書』は柳生宗矩が徳川将軍家に献上した剣法の極意書。剣術を通じて心を磨く「活人剣」の思想が説かれています。"},
-      {type:"web3", q:"Proof of Stake（PoS）の特徴として正しいものはどれですか？",
-       choices:["計算競争でブロックを生成する","保有量に応じて検証者が選ばれる","マイニングマシンが必要","ビットコインが採用している方式"],
-       ans:1, note:"PoSはコインを「担保（ステーク）」してバリデータになる方式。Ethereumは2022年にPoWからPoSへ移行（The Merge）し、消費電力を大幅削減しました。"},
-      {type:"bushido", q:"武士が切腹の際に介錯人を立てる本来の目的はどれですか？",
-       choices:["見届け人として証人になるため","苦しみを長引かせないよう首を斬るため","作法を指導するため","刀を清めるため"],
-       ans:1, note:"介錯人は切腹した武士が苦しむ時間を最小にするため首を斬り落とす役割。武士道における「慈悲」と「礼」の精神が介錯という作法に込められています。"},
-      {type:"web3", q:"マルチシグ（マルチシグネチャ）ウォレットの説明として正しいのはどれですか？",
-       choices:["複数のチェーンに同時送金できる","複数の署名が揃って初めて取引が承認される","一つで複数通貨を管理できる","自動分散投資を行う"],
-       ans:1, note:"マルチシグはm-of-n署名方式。例：3人中2人が署名しないと送金できない設定。DAOの資金管理の安全性向上に不可欠な仕組みです。"},
-      {type:"bushido", q:"江戸時代、武士が「仇討ち」を行う際に必要だったものはどれですか？",
-       choices:["藩主の口頭許可","幕府への届け出と許可状","寺社への誓約","複数の証人の立ち会い"],
-       ans:1, note:"仇討ちは武士道の「義」と「忠」に基づく行為でしたが、江戸時代には幕府への届け出と許可が必要でした。無断の仇討ちは処罰の対象となりました。"},
-      {type:"web3", q:"ゼロ知識証明（ZKP）の特徴を正しく説明しているのはどれですか？",
-       choices:["知識がないことを証明する技術","内容を明かさずに知っていることを証明できる","ゼロコストで取引を実行する方法","ブロックチェーンのデータを削除する手法"],
-       ans:1, note:"ZKP（Zero-Knowledge Proof）は秘密を明かさずに「その秘密を知っている」ことを証明できる暗号技術。プライバシー保護やZK-Rollupに活用されます。"},
-      {type:"bushido", q:"「克己復礼」の元となった儒教の言葉で「己に勝つ」とはどういう意味ですか？",
-       choices:["敵に勝利する","自己の欲や感情を抑制する","試練を乗り越える","肉体的に強くなる"],
-       ans:1, note:"克己とは「自分の欲望・怒り・恐れといった感情を抑制すること」。武士道ではこの自己制御こそが礼の実践であり、真の強さの源とされました。"},
-    ]
-  },
-
-  /* ── 武士道マスター編（番外） ── */
-  {
-    name:"皆伝の巻 — KAIDEN", color:"#4a1a6e", isMaster:"bushido",
-    qs:[
-      {type:"master", q:"「兵は詭道なり」の出典はどれですか？",
-       choices:["孫子","葉隠","五輪書","韓非子"],
-       ans:0, note:"孫子・計篇の言葉。「戦いは騙し合いである」という意味で、武士道の「誠」とは相反するように見えますが、戦略と誠義を使い分ける武将の思想として取り込まれました。"},
-      {type:"master", q:"武士道の精神的支柱となった禅宗を日本に伝えた人物はだれですか？",
-       choices:["道元","栄西","法然","親鸞"],
-       ans:1, note:"栄西（1141〜1215年）が宋から臨済宗を持ち帰り、鎌倉武家社会に広めました。禅の「不動心」「刹那の判断力」は武士道と深く融合しました。"},
-      {type:"master", q:"室町時代に成立した「武家諸法度」の精神的根拠として重視された儒学の概念はどれですか？",
-       choices:["知行合一","大義名分","格物致知","仁政"],
-       ans:1, note:"大義名分論は「正しい名目と道義」を根拠に行動する儒学の概念。徳川幕府は武家諸法度でこれを規範として武士の主従関係と秩序を正当化しました。"},
-      {type:"master", q:"「不動智神妙録」を著した禅僧はだれですか？",
-       choices:["沢庵宗彭","道元","一休宗純","夢窓疎石"],
-       ans:0, note:"沢庵宗彭（1573〜1645年）が柳生宗矩に送った書状をまとめたもの。「心を一所に留めない」不動の境地が剣の極意であると説き、武士道と禅の融合を体現しました。"},
-      {type:"master", q:"武士が「名こそ惜しけれ」と詠んだことで知られる和歌が由来する価値観はどれですか？",
-       choices:["武勇を誇示する精神","名誉を命より重んじる精神","和歌を嗜む文化的素養","主君への忠誠の誓い"],
-       ans:1, note:"「名こそ惜しけれ」は死よりも名誉の汚損を恐れる武士道の精神を表します。源平時代から続く「恥を知る」文化が武士道の礎となっています。"},
-      {type:"master", q:"戦国時代の武将・上杉謙信が篤く信仰し「義の武将」と呼ばれる根拠となった神仏はどれですか？",
-       choices:["八幡神","毘沙門天","春日大社","愛宕権現"],
-       ans:1, note:"上杉謙信は毘沙門天を篤く信仰し「毘」の字を旗印にしました。私欲なき「義」のための戦いという姿勢が、後世の武士道における義の象徴とされています。"},
-      {type:"master", q:"「武道初心集」を著し「武士は常に死を覚悟せよ」と説いた江戸時代の武士はだれですか？",
-       choices:["山本常朝","大道寺友山","柳生宗矩","山鹿素行"],
-       ans:1, note:"大道寺友山（1639〜1730年）の著。『葉隠』と並ぶ武士道論の名著で、日々の生死を覚悟した心構えと礼節の実践を説いています。"},
-      {type:"master", q:"武士の子弟教育で「文武両道」が重んじられた際の「文」として特に重視された学問はどれですか？",
-       choices:["仏教学","国学","儒学","神道"],
-       ans:2, note:"江戸時代の武士教育では儒学（特に朱子学）が「文」の中核とされました。忠・義・礼・仁といった概念を体系的に学ぶことが武士の素養とされました。"},
-      {type:"master", q:"「義を見てせざるは勇なきなり」の出典はどれですか？",
-       choices:["葉隠","論語","孫子","五輪書"],
-       ans:1, note:"論語・為政篇の言葉（孔子）。「正しいことと知りながら行わないのは勇気がない証拠」という意。武士道の「義」と「勇」を結びつける根拠として広く引用されました。"},
-      {type:"master", q:"江戸時代、武士が公式な場で着用する礼装で、袴に合わせた上着の名称はどれですか？",
-       choices:["羽織","裃（かみしも）","直垂（ひたたれ）","狩衣（かりぎぬ）"],
-       ans:1, note:"裃（かみしも）は上下が揃いの麻製の礼装で、武士が公式な場で着用しました。袴と肩衣からなり、江戸時代の武家の正装として定着した武士固有の装束です。"},
-    ]
-  },
-
-  /* ── Web3マスター編（番外） ── */
-  {
-    name:"極伝の巻 — GOKUDEN", color:"#0a4a7a", isMaster:"web3",
-    qs:[
-      {type:"web3m", q:"Ethereumのコンセンサスメカニズムが「The Merge」でPoWからPoSに移行した年はいつですか？",
-       choices:["2021年","2022年","2023年","2024年"],
-       ans:1, note:"2022年9月にEthereumはPoWからPoSへ移行（The Merge）。消費電力を約99.95%削減し、ネットワークの持続可能性と分散化を大きく前進させました。"},
-      {type:"web3m", q:"DAOの投票において「クジラ問題」を軽減するために設計された投票方式はどれですか？",
-       choices:["多数決（1トークン1票）","二次投票（Quadratic Voting）","委任投票（Delegated Voting）","ランダム抽選"],
-       ans:1, note:"二次投票（Quadratic Voting）は投票コストが票数の二乗に比例する仕組み。大口保有者の影響力を抑制しつつ少数意見も反映できる、より公平なガバナンス設計です。"},
-      {type:"web3m", q:"スマートコントラクトの「再入攻撃（Reentrancy Attack）」で2016年に起きた事件はどれですか？",
-       choices:["Mt.Goxハック","The DAO事件","Poly Networkハック","Binanceハック"],
-       ans:1, note:"2016年のThe DAO事件では再入攻撃により約360万ETHが流出。この事件がEthereumのハードフォーク（EthereumとEthereum Classicの分裂）の引き金となりました。"},
-      {type:"web3m", q:"ERC-721とERC-20の最大の違いはどれですか？",
-       choices:["ERC-721は代替不可能なトークン規格","ERC-721は高速処理専用の規格","ERC-721は法定通貨連動トークン","ERC-721はガバナンス専用規格"],
-       ans:0, note:"ERC-20は同一価値で交換可能（代替性あり）な汎用トークン規格。ERC-721は各トークンが一意のIDを持ち代替不可能（Non-Fungible）なNFT規格です。"},
-      {type:"web3m", q:"「ラグプル（Rug Pull）」とはWeb3のどのようなリスクを指しますか？",
-       choices:["スマートコントラクトのバグによる損失","開発チームが資金を持ち逃げする詐欺","ガス代が急騰して取引できない状態","ウォレットの秘密鍵が盗まれること"],
-       ans:1, note:"ラグプルはプロジェクトの開発チームが投資家から資金を集めた後に突然消える詐欺手法。DeFiやNFT領域で頻発し、プロジェクト選定時の最大リスクのひとつです。"},
-      {type:"web3m", q:"「オプティミスティックロールアップ」の特徴はどれですか？",
-       choices:["全取引をL1で検証してからL2に記録する","取引をデフォルトで正当とみなし不正時のみ検証する","ZKPを使ってL1の検証を省略する","ビットコインのSidechain技術"],
-       ans:1, note:"オプティミスティックロールアップ（OptimismやArbitrum）は取引を「楽観的に正当」とみなしてL2で処理し、不正申告があった場合のみL1で検証する方式です。"},
-      {type:"web3m", q:"分散型取引所（DEX）でAMMが使う「x × y = k」の式において、kが表すものはどれですか？",
-       choices:["手数料の総額","流動性プールの定数","ガス代の上限","スリッページの許容幅"],
-       ans:1, note:"Uniswap等のAMM（自動マーケットメーカー）では流動性プールの2資産の積を定数kとして維持します。売買によって片方が減れば自動的にもう片方が増え価格が決まります。"},
-      {type:"web3m", q:"「フラッシュローン攻撃」が可能な本質的な理由はどれですか？",
-       choices:["秘密鍵が解読されるため","担保なし借入・利用・返済が1トランザクション内で完結するため","ガス代を操作できるため","オラクルが改ざんされるため"],
-       ans:1, note:"フラッシュローンはDeFiの「1ブロック内に借入〜返済を完結」という設計を悪用した攻撃。担保不要で巨額を借り価格操作や裁定取引を行い、ブロック内に返済します。"},
-      {type:"web3m", q:"NFTのメタデータをオンチェーンで保存する際に一般的に使われるデータ形式はどれですか？",
-       choices:["PDF","Base64エンコードのSVGまたはJSON","MP4動画","Excelファイル"],
-       ans:1, note:"NFTのオンチェーンメタデータはBase64エンコードしたSVGやJSONとしてスマートコントラクトに直接埋め込まれます。外部サーバーに依存しないため永続性が高まります。"},
-      {type:"web3m", q:"EIP-4337（アカウント抽象化）の目的として正しいものはどれですか？",
-       choices:["ガス代をゼロにする","EOAとスマートコントラクトウォレットの機能差をなくしUXを改善する","L2のトランザクション速度を10倍にする","NFTの転送コストを削減する"],
-       ans:1, note:"EIP-4337はEthereumのアカウント抽象化提案。ソーシャルリカバリー・ガスレス取引・バンドル決済など従来のEOAにはなかった柔軟性をユーザーに提供し、Web3のUX革新の鍵です。"},
-    ]
-  }
-];
-
-/* 通常レベル共通段位 */
-const RANKS=[
+const RANKS = [
   {min:90, rank:"極",  label:"GOKU", msg:"極みの境地。BushiDAOの真の体現者として、コミュニティの先頭に立ってください。"},
   {min:70, rank:"皆",  label:"KAI",  msg:"確かな全伝。あとわずかで極みの境地へ。苦手な問いを繰り返し磨け。"},
   {min:50, rank:"奥",  label:"OU",   msg:"奥義の入口に立った。さらなる鍛錬で皆伝の域が見えてくる。"},
@@ -427,110 +287,331 @@ const RANKS=[
   {min:0,  rank:"入",  label:"NIU",  msg:"武士道とWeb3の道への第一歩。焦らず、一歩ずつ前へ進め。"}
 ];
 
-/* 皆伝の巻（武士道番外）専用段位 */
-const MASTER_RANKS=[
-  {min:100,rank:"極 · 武士道神髄", label:"GOKU", msg:"全問正解。武士道の真髄を体得した者。BushiDAOの精神的支柱として迎え入れる。"},
-  {min:80, rank:"皆 · 武士道",     label:"KAI",  msg:"深い理解を持つ武士。あとわずかで神髄の境地へ。"},
-  {min:60, rank:"奥 · 武士道",     label:"OU",   msg:"相当な素養がある。さらなる古典研究で皆伝に近づける。"},
-  {min:30, rank:"中 · 武士道",     label:"CHU",  msg:"基礎は築かれている。葉隠・五輪書を手に取り再挑戦せよ。"},
-  {min:0,  rank:"入 · 武士道",     label:"NIU",  msg:"武士道の奥深さを知った第一歩。古典を紐解いて再挑戦してください。"}
-];
+let lv = 0;
+let apiLevel = 1;
+let qi = 0;
+let answered = false;
+let currentQs = [];
+let levelMeta = { name: '', color: '#2e7d5e' };
+let userAnswers = [];
+let lastGrade = null;
+let lastClaimCode = null;
 
-/* 極伝の巻（Web3番外）専用段位 */
-const WEB3_RANKS=[
-  {min:100,rank:"極 · Web3覇者",   label:"GOKU", msg:"全問正解。DeFi・DAO・暗号理論すべてを制した極みの使い手。BushiDAOの技術的支柱です。"},
-  {min:80, rank:"皆 · Web3",       label:"KAI",  msg:"高い技術理解。あと一歩で極みの域へ。"},
-  {min:60, rank:"奥 · Web3",       label:"OU",   msg:"基礎は固まっている。深層技術をさらに掘り下げよ。"},
-  {min:30, rank:"中 · Web3",       label:"CHU",  msg:"修錬の途上。DeFiとZKPの理解を深めて再挑戦せよ。"},
-  {min:0,  rank:"入 · Web3",       label:"NIU",  msg:"Web3の世界への第一歩。鍛錬あるのみ。"}
-];
+function setScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goStart(){ setScreen('screen-start'); }
 
-let lv=0,qi=0,score=0,answered=false,bC=0,bT=0,wC=0,wT=0,mC=0,mT=0;
-const KEYS=['A','B','C','D'];
+function isAddress(a){
+  return typeof a === 'string' && /^0x[a-fA-F0-9]{40}$/.test(a.trim());
+}
+function getWallet(){
+  const a = document.getElementById('wallet-input');
+  const b = document.getElementById('result-wallet-input');
+  const va = (a && a.value || '').trim();
+  const vb = (b && b.value || '').trim();
+  return va || vb;
+}
 
-function setScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function goStart(){setScreen('screen-start');}
+async function pingApi(){
+  const st = document.getElementById('api-status');
+  if (!st) return;
+  try {
+    const r = await fetch(API_BASE + '/health');
+    const j = await r.json();
+    if (j.ok) {
+      st.textContent = 'API: 接続OK (' + API_BASE + ') · ' + (j.examId || '');
+      st.classList.remove('err');
+    } else throw new Error('not ok');
+  } catch (e) {
+    st.textContent = 'API: 未接続 — ネットワークまたは Worker URL を確認してください (' + API_BASE + ')';
+    st.classList.add('err');
+  }
+}
 
-function startQuiz(level){
-  lv=level;qi=0;score=0;answered=false;bC=bT=wC=wT=mC=mT=0;
-  const L=LEVELS[lv];
-  document.getElementById('qh-level').textContent=L.name;
-  ['screen-quiz','screen-result'].forEach(id=>document.getElementById(id).style.setProperty('--cl',L.color));
-  setScreen('screen-quiz');
-  render();
+async function startQuiz(levelIndex){
+  lv = levelIndex;
+  apiLevel = levelIndex + 1;
+  qi = 0;
+  answered = false;
+  userAnswers = [];
+  lastGrade = null;
+  lastClaimCode = null;
+  currentQs = [];
+
+  const st = document.getElementById('api-status');
+  try {
+    if (st) { st.textContent = '問題を読み込み中…'; st.classList.remove('err'); }
+    const r = await fetch(API_BASE + '/v1/exam/' + apiLevel);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    if (!data.questions || !data.questions.length) throw new Error('empty questions');
+    currentQs = data.questions.map(q => ({
+      id: q.id,
+      type: q.type,
+      q: q.q,
+      choices: q.choices
+    }));
+    levelMeta = { name: data.name || ('Level ' + apiLevel), color: data.color || '#2e7d5e' };
+    document.documentElement.style.setProperty('--cl', levelMeta.color);
+    ['screen-quiz','screen-result'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.setProperty('--cl', levelMeta.color);
+    });
+    setScreen('screen-quiz');
+    render();
+  } catch (e) {
+    alert('問題の取得に失敗しました。 API: ' + API_BASE + ' / ' + e.message);
+    if (st) { st.textContent = 'API エラー: ' + e.message; st.classList.add('err'); }
+  }
 }
 
 function render(){
-  const L=LEVELS[lv],q=L.qs[qi];answered=false;
-  document.getElementById('qh-prog').style.width=Math.round(qi/L.qs.length*100)+'%';
-  document.getElementById('qh-num').textContent=`${qi+1} / ${L.qs.length}`;
-  document.getElementById('score-live').textContent=score;
-  document.getElementById('total-live').textContent=qi;
-  const b=document.getElementById('q-badge');
-  if(q.type==='master'){b.textContent='武士道マスター';b.className='q-badge master';}
-  else if(q.type==='web3m'){b.textContent='Web3マスター';b.className='q-badge web3';}
-  else if(q.type==='bushido'){b.textContent='武士道';b.className='q-badge bushido';}
-  else{b.textContent='Web3';b.className='q-badge web3';}
-  document.getElementById('q-text').textContent=q.q;
-  document.getElementById('explanation').style.display='none';
-  document.getElementById('next-btn').classList.remove('show');
-  document.getElementById('choices').innerHTML=q.choices.map((c,i)=>
-    `<button class="choice-btn" id="cb${i}" onclick="choose(${i})"><span class="choice-key">${KEYS[i]}</span><span>${c}</span></button>`
-  ).join('');
+  const q = currentQs[qi];
+  answered = false;
+  document.getElementById('qh-level').textContent = levelMeta.name;
+  document.getElementById('qh-num').textContent = (qi + 1) + ' / ' + currentQs.length;
+  const prog = document.getElementById('qh-prog');
+  if (prog) prog.style.width = ((qi / currentQs.length) * 100) + '%';
+  const live = document.getElementById('score-live');
+  const tot = document.getElementById('total-live');
+  if (live) live.textContent = String(userAnswers.filter(a => a !== null && a !== undefined).length);
+  if (tot) tot.textContent = String(currentQs.length);
+
+  const badge = document.getElementById('q-badge');
+  if (badge) {
+    badge.className = 'q-badge ' + (q.type || 'web3');
+    badge.textContent = q.type === 'bushido' ? '武士道' : q.type === 'master' ? 'MASTER' : 'Web3';
+  }
+  document.getElementById('q-text').textContent = q.q;
+
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'choice-btn';
+    btn.id = 'cb' + i;
+    btn.onclick = () => choose(i);
+    btn.innerHTML = '<span class="choice-key">' + String.fromCharCode(65 + i) + '</span><span>' + escapeHtml(c) + '</span>';
+    box.appendChild(btn);
+  });
+
+  const exp = document.getElementById('explanation');
+  if (exp) { exp.style.display = 'none'; exp.innerHTML = ''; }
+
+  const nb = document.getElementById('next-btn');
+  if (nb) {
+    nb.classList.remove('show');
+    nb.textContent = qi === currentQs.length - 1 ? '結果を見る →' : '次の問題 →';
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function choose(i){
-  if(answered)return;answered=true;
-  const q=LEVELS[lv].qs[qi];
-  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
-  const ok=i===q.ans;
-  if(ok){score++;document.getElementById('cb'+i).className='choice-btn correct';}
-  else{document.getElementById('cb'+i).className='choice-btn wrong';document.getElementById('cb'+q.ans).className='choice-btn reveal';}
-  if(q.type==='bushido'){bT++;if(ok)bC++;}
-  else if(q.type==='web3'){wT++;if(ok)wC++;}
-  else{mT++;if(ok)mC++;}
-  const exp=document.getElementById('explanation');
-  exp.style.display='block';
-  exp.innerHTML=`<strong>${ok?'正解！':'不正解'}</strong> — ${q.note}`;
-  document.getElementById('score-live').textContent=score;
-  document.getElementById('total-live').textContent=qi+1;
-  const nb=document.getElementById('next-btn');
-  nb.textContent=qi===LEVELS[lv].qs.length-1?'結果を見る →':'次の問題 →';
-  nb.classList.add('show');
+  // Allow switching answers until Next is pressed
+  answered = true;
+  userAnswers[qi] = i;
+  currentQs[qi].choices.forEach((_, j) => {
+    const el = document.getElementById('cb' + j);
+    if (!el) return;
+    el.disabled = false;
+    el.classList.toggle('selected', j === i);
+  });
+  const live = document.getElementById('score-live');
+  if (live) live.textContent = String(userAnswers.filter(a => a !== null && a !== undefined).length);
+  const nb = document.getElementById('next-btn');
+  if (nb) nb.classList.add('show');
 }
 
-function nextQ(){qi++;qi>=LEVELS[lv].qs.length?showResult():render();}
+function nextQ(){
+  if (!answered && userAnswers[qi] === undefined) {
+    alert('選択肢を選んでから進んでください。');
+    return;
+  }
+  qi++;
+  if (qi >= currentQs.length) showResult();
+  else render();
+}
 
-function showResult(){
+async function showResult(){
   setScreen('screen-result');
-  const L=LEVELS[lv],total=L.qs.length,pct=Math.round(score/total*100);
-  const ranks=L.isMaster==='bushido'?MASTER_RANKS:L.isMaster==='web3'?WEB3_RANKS:RANKS;
-  const r=ranks.find(r=>pct>=r.min);
-  document.getElementById('res-num').textContent=score;
-  document.getElementById('res-denom').textContent=`/ ${total}問`;
-  document.getElementById('res-rlabel').textContent=r.label+' — '+pct+'%';
-  document.getElementById('res-rank').textContent=r.rank;
-  document.getElementById('res-msg').textContent=r.msg;
+  const total = currentQs.length;
+  document.getElementById('res-num').textContent = '…';
+  document.getElementById('res-denom').textContent = '/ ' + total + '問';
+  document.getElementById('res-rlabel').textContent = '採点中';
+  document.getElementById('res-rank').textContent = levelMeta.name;
+  document.getElementById('res-msg').textContent = 'サーバーで採点しています…';
+  document.getElementById('score-bd').innerHTML = '';
+  hideClaimUi();
 
-  let bdHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:0.05em">スコア</div>`;
-  if(L.isMaster==='bushido'){
-    bdHTML+=`<div class="sb-row"><div class="sb-label">武士道</div><div class="sb-bar-wrap"><div class="sb-bar master-bar" style="width:0%" id="bar-m"></div></div><div class="sb-val">${mC}/${mT}</div></div>`;
-  } else if(L.isMaster==='web3'){
-    bdHTML+=`<div class="sb-row"><div class="sb-label">Web3</div><div class="sb-bar-wrap"><div class="sb-bar web3" style="width:0%" id="bar-m"></div></div><div class="sb-val">${mC}/${mT}</div></div>`;
-  } else {
-    const bP=bT>0?Math.round(bC/bT*100):0,wP=wT>0?Math.round(wC/wT*100):0;
-    bdHTML+=`<div class="sb-row"><div class="sb-label">武士道</div><div class="sb-bar-wrap"><div class="sb-bar bushido" style="width:0%" id="bar-b"></div></div><div class="sb-val">${bC}/${bT}</div></div>`;
-    bdHTML+=`<div class="sb-row"><div class="sb-label">Web3</div><div class="sb-bar-wrap"><div class="sb-bar web3" style="width:0%" id="bar-w"></div></div><div class="sb-val">${wC}/${wT}</div></div>`;
-    setTimeout(()=>{document.getElementById('bar-b').style.width=bP+'%';document.getElementById('bar-w').style.width=wP+'%';},100);
+  const answers = [];
+  for (let i = 0; i < total; i++) {
+    answers.push(userAnswers[i] === undefined || userAnswers[i] === null ? -1 : userAnswers[i]);
   }
-  document.getElementById('score-bd').innerHTML=bdHTML;
-  if(L.isMaster){
-    const mP=mT>0?Math.round(mC/mT*100):0;
-    setTimeout(()=>{const el=document.getElementById('bar-m');if(el)el.style.width=mP+'%';},100);
+
+  const wallet = getWallet();
+  let gradeWallet = wallet;
+  if (!isAddress(gradeWallet)) {
+    gradeWallet = '0x0000000000000000000000000000000000000001';
+  }
+
+  try {
+    const r = await fetch(API_BASE + '/v1/exam/' + apiLevel + '/grade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet: gradeWallet, answers })
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    lastGrade = data;
+    applyGradeToUi(data, isAddress(wallet));
+  } catch (e) {
+    document.getElementById('res-num').textContent = '?';
+    document.getElementById('res-rlabel').textContent = 'ERROR';
+    document.getElementById('res-msg').textContent = '採点に失敗しました: ' + e.message;
+    showClaimFail('API エラー: ' + e.message + '。Worker (npm run dev) と CORS を確認してください。');
   }
 }
 
-function retryQuiz(){startQuiz(lv);}
+function applyGradeToUi(data, walletOk){
+  const score = data.score, total = data.total, pct = data.percent;
+  const r = RANKS.find(x => pct >= x.min) || RANKS[RANKS.length - 1];
+  document.getElementById('res-num').textContent = score;
+  document.getElementById('res-denom').textContent = '/ ' + total + '問';
+  document.getElementById('res-rlabel').textContent = r.label + ' — ' + pct + '%';
+  document.getElementById('res-rank').textContent = r.rank;
+  let msg = r.msg;
+  if (data.passed) {
+    msg += '　【SBT合格ライン達成: ' + data.passPercentRequired + '%以上】';
+  } else {
+    msg += '　【SBT合格ライン未達: 必要 ' + data.passPercentRequired + '% / 今回 ' + pct + '%】';
+  }
+  document.getElementById('res-msg').textContent = msg;
+  document.getElementById('score-bd').innerHTML =
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">スコア（サーバー採点）</div>' +
+    '<div class="sb-row"><div class="sb-label">正解</div><div class="sb-bar-wrap"><div class="sb-bar bushido" style="width:' + pct + '%"></div></div><div class="sb-val">' + score + '/' + total + '</div></div>';
+
+  lastClaimCode = data.claimCode || null;
+  const box = document.getElementById('claim-box');
+  box.style.display = 'block';
+
+  if (data.passed && lastClaimCode && walletOk) {
+    showClaimSuccess(lastClaimCode);
+  } else if (data.passed && !walletOk) {
+    showClaimNeedWallet();
+  } else {
+    showClaimFail('今回は SBT 合格ライン（' + data.passPercentRequired + '%）に届きませんでした。再挑戦して鍛錬を続けてください。');
+  }
+}
+
+function hideClaimUi(){
+  const box = document.getElementById('claim-box');
+  if (!box) return;
+  box.style.display = 'none';
+  box.classList.remove('fail');
+  document.getElementById('claim-code').style.display = 'none';
+  document.getElementById('btn-copy-claim').style.display = 'none';
+  document.getElementById('btn-issue-claim').style.display = 'none';
+  const rw = document.getElementById('result-wallet-wrap');
+  if (rw) rw.style.display = 'none';
+  document.getElementById('claim-body').textContent = '';
+}
+
+function showClaimSuccess(code){
+  const box = document.getElementById('claim-box');
+  box.classList.remove('fail');
+  document.getElementById('claim-title').textContent = '合格証明（Exam Pass 請求用）';
+  document.getElementById('claim-body').innerHTML =
+    'サーバーが署名した合格バウチャーです。Discord で（準備完了後）請求に使います。<br><small>有効期限あり・1回限り・リンク済みウォレットと一致必須。</small>';
+  const cc = document.getElementById('claim-code');
+  cc.style.display = 'block';
+  cc.textContent = code;
+  document.getElementById('btn-copy-claim').style.display = 'inline-block';
+  document.getElementById('btn-issue-claim').style.display = 'none';
+  const rw = document.getElementById('result-wallet-wrap');
+  if (rw) rw.style.display = 'none';
+}
+
+function showClaimNeedWallet(){
+  const box = document.getElementById('claim-box');
+  box.classList.remove('fail');
+  document.getElementById('claim-title').textContent = 'SBT合格ライン達成';
+  document.getElementById('claim-body').textContent =
+    'スコアは合格ラインを超えています。下に Discord /link_wallet と同じウォレットを入力し、「合格証明を発行」を押してください。';
+  document.getElementById('claim-code').style.display = 'none';
+  document.getElementById('btn-copy-claim').style.display = 'none';
+  document.getElementById('btn-issue-claim').style.display = 'inline-block';
+  const rw = document.getElementById('result-wallet-wrap');
+  if (rw) {
+    rw.style.display = 'block';
+    const inp = document.getElementById('result-wallet-input');
+    const start = document.getElementById('wallet-input');
+    if (inp && start && start.value && !inp.value) inp.value = start.value;
+    if (inp) setTimeout(() => inp.focus(), 50);
+  }
+}
+
+function showClaimFail(msg){
+  const box = document.getElementById('claim-box');
+  box.classList.add('fail');
+  document.getElementById('claim-title').textContent = '合格証明なし';
+  document.getElementById('claim-body').textContent = msg;
+  document.getElementById('claim-code').style.display = 'none';
+  document.getElementById('btn-copy-claim').style.display = 'none';
+  document.getElementById('btn-issue-claim').style.display = 'none';
+}
+
+async function issueClaimFromResult(){
+  const wallet = getWallet();
+  if (!isAddress(wallet)) {
+    alert('有効な 0x ウォレットアドレスを入力してください。');
+    return;
+  }
+  if (!lastGrade) {
+    alert('先に試験を完了してください。');
+    return;
+  }
+  const answers = [];
+  for (let i = 0; i < currentQs.length; i++) {
+    answers.push(userAnswers[i] === undefined || userAnswers[i] === null ? -1 : userAnswers[i]);
+  }
+  try {
+    const r = await fetch(API_BASE + '/v1/exam/' + apiLevel + '/grade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet, answers })
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    lastGrade = data;
+    lastClaimCode = data.claimCode || null;
+    if (data.passed && lastClaimCode) showClaimSuccess(lastClaimCode);
+    else showClaimFail('発行できませんでした（不合格またはエラー）。');
+  } catch (e) {
+    alert('発行失敗: ' + e.message);
+  }
+}
+
+async function copyClaimCode(){
+  const code = lastClaimCode || document.getElementById('claim-code').textContent;
+  if (!code) return;
+  try {
+    await navigator.clipboard.writeText(code);
+    alert('合格合格証明をコピーしました。');
+  } catch {
+    prompt('コピーして保存してください:', code);
+  }
+}
+
+function retryQuiz(){ startQuiz(lv); }
+
+pingApi();
 </script>
+
 </body>
 </html>
