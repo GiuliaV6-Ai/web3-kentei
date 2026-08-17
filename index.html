@@ -276,7 +276,15 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 </div>
 <script>
 /* BushiDAO WEB3検定 — Phase C: Worker-backed exam (no client answers) */
-const API_BASE = (localStorage.getItem('BUSHI_EXAM_API') || 'https://bushi-exam-worker.bushidao-exam.workers.dev').replace(/\/$/, '');
+const API_BASE = (function () {
+  const NEW = "https://bushi-exam-worker.bushidao.workers.dev";
+  const raw = (localStorage.getItem("BUSHI_EXAM_API") || NEW).replace(/\/$/, "");
+  if (raw.includes("bushidao-exam.workers.dev")) {
+    try { localStorage.removeItem("BUSHI_EXAM_API"); } catch (e) {}
+    return NEW;
+  }
+  return raw;
+})();
 
 const RANKS = [
   {min:90, rank:"極",  label:"GOKU", msg:"極みの境地。BushiDAOの真の体現者として、コミュニティの先頭に立ってください。"},
@@ -292,6 +300,7 @@ let apiLevel = 1;
 let qi = 0;
 let answered = false;
 let currentQs = [];
+let qOrder = []; // qOrder[表示位置] = 元の問題番号（サーバー採点に使う元順序）
 let levelMeta = { name: '', color: '#2e7d5e' };
 let userAnswers = [];
 let lastGrade = null;
@@ -347,12 +356,22 @@ async function startQuiz(levelIndex){
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
     if (!data.questions || !data.questions.length) throw new Error('empty questions');
-    currentQs = data.questions.map(q => ({
-      id: q.id,
-      type: q.type,
-      q: q.q,
-      choices: q.choices
-    }));
+    // 出題順を毎回ランダム化（再挑戦のたびに問題の並びが変わる）
+    // qOrder[表示位置] = 元の問題番号 — サーバー採点は元の問題順を期待するため対応表を保持する
+    qOrder = shuffleArray(data.questions.map((_, idx) => idx));
+    currentQs = qOrder.map(qIdx => {
+      const q = data.questions[qIdx];
+      // 選択肢の表示順も毎回ランダム化（再挑戦のたびに配置が変わる）
+      // order[表示位置] = 元の選択肢番号 — 採点はサーバー側が元番号で行うため対応表を保持する
+      const order = shuffleArray(q.choices.map((_, idx) => idx));
+      return {
+        id: q.id,
+        type: q.type,
+        q: q.q,
+        choices: order.map(o => q.choices[o]),
+        order: order
+      };
+    });
     levelMeta = { name: data.name || ('Level ' + apiLevel), color: data.color || '#2e7d5e' };
     document.documentElement.style.setProperty('--cl', levelMeta.color);
     ['screen-quiz','screen-result'].forEach(id => {
@@ -408,6 +427,29 @@ function render(){
   }
 }
 
+function buildAnswersInOriginalOrder(){
+  // userAnswers は「表示順（シャッフル後）」で記録されている。
+  // サーバーは元の問題順で answers 配列を期待するため、qOrder を使って並べ替える。
+  const total = currentQs.length;
+  const answers = new Array(total).fill(-1);
+  for (let i = 0; i < total; i++) {
+    const val = userAnswers[i] === undefined || userAnswers[i] === null ? -1 : userAnswers[i];
+    const origIdx = qOrder[i] !== undefined ? qOrder[i] : i;
+    answers[origIdx] = val;
+  }
+  return answers;
+}
+
+function shuffleArray(arr){
+  // Fisher–Yates シャッフル（新しい配列を返す）
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function escapeHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -415,7 +457,8 @@ function escapeHtml(s){
 function choose(i){
   // Allow switching answers until Next is pressed
   answered = true;
-  userAnswers[qi] = i;
+  // i は「表示上の位置」。採点用には元の選択肢番号に変換して記録する
+  userAnswers[qi] = currentQs[qi].order[i];
   currentQs[qi].choices.forEach((_, j) => {
     const el = document.getElementById('cb' + j);
     if (!el) return;
@@ -449,10 +492,7 @@ async function showResult(){
   document.getElementById('score-bd').innerHTML = '';
   hideClaimUi();
 
-  const answers = [];
-  for (let i = 0; i < total; i++) {
-    answers.push(userAnswers[i] === undefined || userAnswers[i] === null ? -1 : userAnswers[i]);
-  }
+  const answers = buildAnswersInOriginalOrder();
 
   const wallet = getWallet();
   let gradeWallet = wallet;
@@ -576,10 +616,7 @@ async function issueClaimFromResult(){
     alert('先に試験を完了してください。');
     return;
   }
-  const answers = [];
-  for (let i = 0; i < currentQs.length; i++) {
-    answers.push(userAnswers[i] === undefined || userAnswers[i] === null ? -1 : userAnswers[i]);
-  }
+  const answers = buildAnswersInOriginalOrder();
   try {
     const r = await fetch(API_BASE + '/v1/exam/' + apiLevel + '/grade', {
       method: 'POST',
